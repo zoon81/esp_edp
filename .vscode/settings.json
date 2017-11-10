@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "osapi.h": "c",
+        "user_config.h": "c",
+        "string.h": "c",
+        "ets_sys.h": "c",
+        "c_types.h": "c",
+        "gpio.h": "c",
+        "os_type.h": "c",
+        "spi.h": "c",
+        "user_interface.h": "c"
+    }
+}
