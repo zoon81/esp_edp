@@ -3,15 +3,18 @@
         {
             "name": "ESP8266",
             "includePath": [
-                "/home/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/include",
-                "${workspaceRoot}/include"
+                "/home/t400/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/include",
+                "${workspaceRoot}/include",
+                "${workspaceRoot}/user",
+                "${workspaceRoot}/user/HAL",
+                "${workspaceRoot}/user/driver"
                 
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
-                    "/home/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/include",
+                    "/home/t400/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/include",
                     "${workspaceRoot}/include",
                     "${workspaceRoot}/user",
                     "${workspaceRoot}/user/HAL",

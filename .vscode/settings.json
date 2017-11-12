@@ -9,5 +9,6 @@
         "os_type.h": "c",
         "spi.h": "c",
         "user_interface.h": "c"
-    }
+    },
+    "C_Cpp.intelliSenseEngine": "Default"
 }

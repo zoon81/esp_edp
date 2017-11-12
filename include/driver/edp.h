@@ -2,15 +2,13 @@
 #define INC_EDP_H
 #include "user_config.h"
 
-#define EDP_RST_PIN     BIT4
-#define EDP_BUSY_PIN    BIT5
-#define EDP_DC_PIN      BIT2
-#define EDP_COMMAND 0
-#define EDP_DATA 1
+#define EDP_RST_PIN     BIT4    // D2
+#define EDP_DC_PIN      BIT5    // D1
+#define EDP_DATA_FLAG   0x100
 
 // Display resolution
-#define EPD_WIDTH       200
-#define EPD_HEIGHT      200
+#define EDP_WIDTH       200
+#define EDP_HEIGHT      200
 
 // EPD1IN54 commands
 #define DRIVER_OUTPUT_CONTROL                       0x01
@@ -34,5 +32,13 @@
 #define SET_RAM_X_ADDRESS_COUNTER                   0x4E
 #define SET_RAM_Y_ADDRESS_COUNTER                   0x4F
 #define TERMINATE_FRAME_READ_WRITE                  0xFF
+
+#define EDP_DATA(data) ((data) | EDP_DATA_FLAG)
+
+void edp_init();
+void edp_gpio_init();
+void edp_reset();
+void edp_sendCommand(uint8_t command);
+void edp_sendData(uint8_t data);
 
 #endif
