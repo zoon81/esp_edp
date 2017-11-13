@@ -48,8 +48,9 @@ void spi_init(uint8 spi_no)
 }
 // Toogle SPI_CS pin behavior.This can be helpfull if you need to send a long byte stream.
 //YOU can't use SPI_CS pin as gpio (only HSPI_CS are allowed to configure as GPIO)
-void hspi_setcs_mode(uint8_t spi_cs_state)
+void hspi_autocs_mode(uint8_t spi_cs_state)
 {
+	while (spi_busy(HSPI)); //wait for SPI transaction to complete
 	if (spi_cs_state)
 	{
 		SET_PERI_REG_MASK(SPI_USER(HSPI), SPI_CS_SETUP | SPI_CS_HOLD);
@@ -59,7 +60,7 @@ void hspi_setcs_mode(uint8_t spi_cs_state)
 	{
 		CLEAR_PERI_REG_MASK(SPI_USER(HSPI), SPI_CS_SETUP | SPI_CS_HOLD);
 		PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15); 			//using pin as GPIO15 for manual togling cs
-		gpio_output_set(0, 0, SPI_CS_PIN, 0);			 				//set HSPI cs pin for GPIO
+		gpio_output_set(0, 0, HSPI_CS_PIN, 0);			 				//set HSPI cs pin for GPIO
 	}
 }
 

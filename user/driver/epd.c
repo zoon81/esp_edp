@@ -41,14 +41,16 @@ void edp_init()
     edp_sendData(0x03);  */ // X increment; Y increment
     spi_transaction(HSPI, 0, 0, 9, DATA_ENTRY_MODE_SETTING, 9, EDP_DATA(0x03), 0, 0);
 
-    hspi_setcs_mode(SPI_CSMODE_MANUAL);
-    SPI_CS_LOW;
-    spi_transaction(0,0,0,0,0, 9, WRITE_LUT_REGISTER, 0, 0 );
+    hspi_autocs_mode(HSPI_CSMODE_MANUAL);
+    HSPI_CS_LOW;
+    spi_transaction(HSPI,0,0,0,0, 9, WRITE_LUT_REGISTER, 0, 0 );
     uint8_t i;
     for(i = 0; i < 30 ; i++){
-        spi_transaction(0,0,0,0,0, 9, EDP_DATA( lut_full_update[i]), 0, 0);
+        spi_transaction(HSPI,0,0,0,0, 9, EDP_DATA( lut_full_update[i]), 0, 0);
     }
-    SPI_CS_HI;
+    HSPI_CS_HI;
+    hspi_autocs_mode(HSPI_CSMODE_AUTO);
+    
 }
 void edp_gpio_init()
 {
@@ -72,38 +74,47 @@ void edp_reset()
 }
 
 void edp_clearFrameMemory(unsigned char color) {
-    SetMemoryArea(0, 0, EDP_WIDTH - 1, EDP_HEIGHT - 1);
-    SetMemoryPointer(0, 0);
-    SendCommand(WRITE_RAM);
+    edp_setMemoryArea(0, 0, EDP_WIDTH - 1, EDP_HEIGHT - 1);
+    edp_setMemoryPointer(0, 0);
+    hspi_autocs_mode(HSPI_CSMODE_MANUAL);
+    HSPI_CS_LOW;
+    spi_transaction(HSPI,0,0,0,0, 9, WRITE_RAM, 0, 0);
     /* send the color data */
-    for (int i = 0; i < this->width / 8 * this->height; i++) {
-        SendData(color);
+    uint16_t i;
+    for (i = 0; i < EDP_WIDTH / 8 * EDP_HEIGHT; i++) {
+        spi_transaction(HSPI, 0, 0, 0, 0, 9,EDP_DATA(color), 0, 0);
     }
+    HSPI_CS_HI;
+    hspi_autocs_mode(HSPI_CSMODE_AUTO);
 }
 
 
 void edp_displayFrame(void) {
-    SendCommand(DISPLAY_UPDATE_CONTROL_2);
-    SendData(0xC4);
-    SendCommand(MASTER_ACTIVATION);
-    SendCommand(TERMINATE_FRAME_READ_WRITE);
-    WaitUntilIdle();
+    /* SendCommand(DISPLAY_UPDATE_CONTROL_2);
+    SendData(0xC4); */
+    spi_transaction(HSPI,0,0,9, DISPLAY_UPDATE_CONTROL_2, 9, EDP_DATA(0xC4),0,0);
+    //SendCommand(MASTER_ACTIVATION);
+    spi_transaction(HSPI,0,0,0,0, 9, MASTER_ACTIVATION, 0, 0);
+    //SendCommand(TERMINATE_FRAME_READ_WRITE);
+    spi_transaction(HSPI,0,0,0,0, 9, TERMINATE_FRAME_READ_WRITE,0,0);
+    //WaitUntilIdle();
 }
 
 void edp_setMemoryArea(int x_start, int y_start, int x_end, int y_end) {
-    SendCommand(SET_RAM_X_ADDRESS_START_END_POSITION);
-    /* x point must be the multiple of 8 or the last 3 bits will be ignored */
+    /* SendCommand(SET_RAM_X_ADDRESS_START_END_POSITION);
+    // x point must be the multiple of 8 or the last 3 bits will be ignored
     SendData((x_start >> 3) & 0xFF);
-    SendData((x_end >> 3) & 0xFF);
-    SendCommand(SET_RAM_Y_ADDRESS_START_END_POSITION);
+    SendData((x_end >> 3) & 0xFF); */
+    spi_transaction(HSPI, 0,0, 9, SET_RAM_X_ADDRESS_START_END_POSITION, 18, ( (EDP_DATA((x_start >> 3) & 0xFF) << 9) |  EDP_DATA((x_end >> 3) & 0xFF)), 0, 0);
+    /* SendCommand(SET_RAM_Y_ADDRESS_START_END_POSITION);
     SendData(y_start & 0xFF);
     SendData((y_start >> 8) & 0xFF);
     SendData(y_end & 0xFF);
-    SendData((y_end >> 8) & 0xFF);
+    SendData((y_end >> 8) & 0xFF); */
+    spi_transaction(HSPI, 9, SET_RAM_Y_ADDRESS_START_END_POSITION, 18, ((EDP_DATA(y_start & 0xFF) << 9) | EDP_DATA((y_start >> 8) & 0xFF)), 18, ((EDP_DATA(y_end & 0xFF) << 9) | EDP_DATA((y_end >> 8) & 0xFF)),0,0);
 }
 
 void edp_setMemoryPointer(int x, int y) {
-    hspi_setcs_mode(SPI_CSMODE_AUTO);
     spi_transaction(HSPI, 0,0, 9, SET_RAM_X_ADDRESS_COUNTER, 9, EDP_DATA((x >> 3) & 0xFF), 0, 0);
    // SendCommand(SET_RAM_X_ADDRESS_COUNTER);
     /* x point must be the multiple of 8 or the last 3 bits will be ignored */

@@ -7,6 +7,8 @@
 #include "gpio.h"
 #include "os_type.h"
 #include "HAL/spi.h"
+#include "driver/edp.h"
+#include "driver/fonts.h"
 
 void some_timerfunc(void *arg);
 void ICACHE_FLASH_ATTR user_init();

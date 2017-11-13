@@ -57,7 +57,7 @@ void spi_clock(uint8_t spi_no, uint16 prediv, uint8_t cntdiv);
 void spi_tx_byte_order(uint8_t spi_no, uint8_t byte_order);
 void spi_rx_byte_order(uint8_t spi_no, uint8_t byte_order);
 uint32_t spi_transaction(uint8_t spi_no, uint8_t cmd_bits, uint16 cmd_data, uint32 addr_bits, uint32 addr_data, uint32 dout_bits, uint32 dout_data, uint32 din_bits, uint32 dummy_bits);
-void hspi_setcs_mode(uint8_t spi_cs_state);
+void hspi_autocs_mode(uint8_t spi_cs_state);
 
 //Expansion Macros
 #define spi_busy(spi_no) READ_PERI_REG(SPI_CMD(spi_no))&SPI_USR
@@ -72,10 +72,10 @@ void hspi_setcs_mode(uint8_t spi_cs_state);
 #define spi_rx16(spi_no)      spi_transaction(spi_no, 0, 0, 0, 0, 0, 0, 16,   0)
 #define spi_rx32(spi_no)      spi_transaction(spi_no, 0, 0, 0, 0, 0, 0, 32,   0)
 
-#define SPI_CSMODE_MANUAL   0
-#define SPI_CSMODE_AUTO     1
-#define SPI_CS_PIN          BIT15
-#define SPI_CS_HI           gpio_output_set(SPI_CS_PIN, 0, 0, 0)
-#define SPI_CS_LOW          gpio_output_set(0, SPI_CS_PIN, 0, 0)
+#define HSPI_CSMODE_MANUAL   0
+#define HSPI_CSMODE_AUTO     1
+#define HSPI_CS_PIN          BIT15
+#define HSPI_CS_HI           while (spi_busy(HSPI)); gpio_output_set(HSPI_CS_PIN, 0, 0, 0)
+#define HSPI_CS_LOW          while (spi_busy(HSPI)); gpio_output_set(0, HSPI_CS_PIN, 0, 0); os_delay_us(20)
 
 #endif

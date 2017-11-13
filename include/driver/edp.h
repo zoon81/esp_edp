@@ -40,5 +40,10 @@ void edp_gpio_init();
 void edp_reset();
 void edp_sendCommand(uint8_t command);
 void edp_sendData(uint8_t data);
+void edp_clearFrameMemory(unsigned char color);
+void edp_displayFrame(void);
+void edp_setMemoryArea(int x_start, int y_start, int x_end, int y_end);
+void edp_setMemoryPointer(int x, int y);
+
 
 #endif
