@@ -3,7 +3,7 @@
 #include "user_config.h"
 
 #define EDP_RST_PIN     BIT4    // D2
-#define EDP_DC_PIN      BIT5    // D1
+#define EDP_BUSY_PIN    BIT5    // D1
 #define EDP_DATA_FLAG   0x100
 
 // Display resolution
@@ -44,6 +44,8 @@ void edp_clearFrameMemory(unsigned char color);
 void edp_displayFrame(void);
 void edp_setMemoryArea(int x_start, int y_start, int x_end, int y_end);
 void edp_setMemoryPointer(int x, int y);
+void edp_setFrameMemory(uint8_t x, uint8_t y, uint8_t x_end, uint8_t y_end, const uint8_t *image_data, uint8_t isInverted);
+void edp_waitUntilIdle();
 
 
 #endif
