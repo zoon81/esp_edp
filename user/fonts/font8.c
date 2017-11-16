@@ -1,11 +1,4 @@
-#ifndef INC_FONTS_H
-#define INC_FONTS_H
 #include "user_config.h"
-
-#define MAX_HEIGHT_FONT         24
-#define MAX_WIDTH_FONT          17
-#define OFFSET_BITMAP           54
-
 
 const uint8_t Font8_Table[] = 
 {
@@ -959,5 +952,4 @@ const uint8_t Font8_Table[] =
 	0x00, //      
 	0x00, //      
 };
-  
-#endif /* __FONTS_H */
+const font_t font8 = {1, 8, 8, Font8_Table};

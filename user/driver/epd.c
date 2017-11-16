@@ -73,13 +73,13 @@ void edp_clearFrameMemory(unsigned char color) {
 void edp_setFrameMemory(uint8_t x, uint8_t y, uint8_t x_end, uint8_t y_end, const uint8_t *image_data, uint8_t isInverted) {
     edp_setMemoryArea(x, y, x_end, y_end);
     edp_setMemoryPointer(x, y);
-
+    os_printf("x_end:%d y_end:%d", x_end, y_end);
     hspi_autocs_mode(HSPI_CSMODE_MANUAL);
     HSPI_CS_LOW;
     spi_transaction(HSPI,0,0,0,0, 9, WRITE_RAM, 0, 0);
     uint8_t i,j;
     for(j = y ; j < y_end ; j++){
-        for (i = x; i < (x_end + 1) ; i++) {
+        for (i = 0; i < ((x_end - x) / 8 + 1) ; i++) {
             if(isInverted)
                 spi_transaction(HSPI, 0, 0, 0, 0, 9,EDP_DATA(~(*image_data++)), 0, 0);
             else

@@ -32,7 +32,7 @@ ESPBAUD		?= 460800
 TARGET		= blinky
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= user user/HAL user/driver
+MODULES		= user user/HAL user/driver user/fonts
 EXTRA_INCDIR    = include
 
 # libraries used in this project, mainly provided by the SDK
