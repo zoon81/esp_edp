@@ -9,6 +9,7 @@
 #include "HAL/spi.h"
 #include "driver/edp.h"
 #include "fonts.h"
+#include "icons.h"
 #include "ui.h"
 
 void some_timerfunc(void *arg);
