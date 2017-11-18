@@ -8,7 +8,7 @@
 typedef struct{
     uint8_t icon_x_size;
     uint8_t icon_y_size;
-    const uint8_t* icon_tables[];
+    const uint32_t* icon_tables[];
 } icon_t;
 
 extern const icon_t weather_icons;

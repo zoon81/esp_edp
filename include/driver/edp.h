@@ -34,6 +34,12 @@
 #define TERMINATE_FRAME_READ_WRITE                  0xFF
 
 #define EDP_DATA(data) ((data) | EDP_DATA_FLAG)
+#define EDP_DATA_PART1(data) (EDP_DATA( (uint8_t ) ((data) & 0xff) ))
+#define EDP_DATA_PART2(data) (EDP_DATA( (uint8_t ) (((data) >> 8) & 0xff) ))
+#define EDP_DATA_PART3(data) (EDP_DATA( (uint8_t ) (((data) >> 16) & 0xff) ))
+#define EDP_DATA_PART4(data) (EDP_DATA( (uint8_t ) (((data) >> 24) & 0xff) ))
+#define EDP_DATA_BUILD18_LOWER(data) ( ((EDP_DATA_PART2((data))) << 9) | EDP_DATA_PART1((data)) )
+#define EDP_DATA_BUILD18_UPPER(data) ( ((EDP_DATA_PART4((data))) << 9) | EDP_DATA_PART3((data)) )
 
 void edp_init();
 void edp_gpio_init();
@@ -45,6 +51,7 @@ void edp_displayFrame(void);
 void edp_setMemoryArea(int x_start, int y_start, int x_end, int y_end);
 void edp_setMemoryPointer(int x, int y);
 void edp_setFrameMemory(uint8_t x, uint8_t y, uint8_t x_end, uint8_t y_end, const uint8_t *image_data, uint8_t isInverted);
+void edp_setFrameMemory32(uint8_t x, uint8_t y, uint8_t x_end, uint8_t y_end, const uint32_t *image_data, uint8_t isInverted);
 void edp_waitUntilIdle();
 
 
