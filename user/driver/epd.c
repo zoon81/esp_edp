@@ -97,19 +97,23 @@ void edp_setFrameMemory(uint8_t x, uint8_t y, uint8_t x_end, uint8_t y_end, cons
 // This function applicable only if the image width * height is multiple of 32 (Like 8x4 or 16x2 or 96x96 etc.)
 void edp_setFrameMemory32(uint8_t x, uint8_t y, uint8_t x_end, uint8_t y_end, const uint32_t *image_data, uint8_t isInverted)
 {
-    edp_setMemoryArea(x, y, x_end, y_end);
+    edp_setMemoryArea(x, y, x_end - 8, y_end);
     edp_setMemoryPointer(x, y);
     os_printf("x_end:%d y_end:%d", x_end, y_end);
     hspi_autocs_mode(HSPI_CSMODE_MANUAL);
     HSPI_CS_LOW;
     spi_transaction(HSPI, 0, 0, 0, 0, 9, WRITE_RAM, 0, 0);
     uint16_t i;
-    for (i = 0; i < (((y_end - y) * (x_end - x)) / 32); i++)
+    for (i = 0; i < (((y_end - y) * (uint16_t)(x_end - x)) / 32); i++)
     {
-        if (isInverted)
-            spi_transaction(HSPI, 0, 0, 18, EDP_DATA_BUILD18_UPPER(~(*image_data)), 18, EDP_DATA_BUILD18_LOWER(~(*image_data++)), 0, 0);
-        else
-            spi_transaction(HSPI, 0, 0, 18, EDP_DATA_BUILD18_UPPER(*image_data), 18, EDP_DATA_BUILD18_LOWER(*image_data++), 0, 0);
+        if (isInverted){
+            spi_transaction(HSPI, 0, 0, 18, EDP_DATA_BUILD18_UPPER(~(*image_data)), 18, EDP_DATA_BUILD18_LOWER(~(*image_data)), 0, 0);
+            //os_printf("%x %x", EDP_DATA_BUILD18_UPPER(~(*image_data)),EDP_DATA_BUILD18_LOWER(~(*image_data)));
+            }
+        else{
+            spi_transaction(HSPI, 0, 0, 18, EDP_DATA_BUILD18_UPPER(*image_data), 18, EDP_DATA_BUILD18_LOWER(*image_data), 0, 0);
+            }
+        image_data++;
     }
     HSPI_CS_HI;
     hspi_autocs_mode(HSPI_CSMODE_AUTO);

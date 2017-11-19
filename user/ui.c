@@ -15,5 +15,7 @@ void draw_string(uint8_t x, uint8_t y, uint8_t *str, const font_t* font){
 }
 
 void draw_icon(uint8_t x, uint8_t y, const icon_t *icons, uint8_t icon_pos){
-    edp_setFrameMemory32(x, y, x + icons->icon_x_size - 8, y + icons->icon_y_size, icons->icon_tables[icon_pos], 0);
+    os_printf("draw_icon");
+    os_printf("%x", ((*icons).icon_tables[0])[0] );
+    edp_setFrameMemory32(x, y, x + icons->icon_x_size, y + icons->icon_y_size, ((*icons).icon_tables[icon_pos]), 0);
 }

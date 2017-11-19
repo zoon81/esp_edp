@@ -34,10 +34,10 @@
 #define TERMINATE_FRAME_READ_WRITE                  0xFF
 
 #define EDP_DATA(data) ((data) | EDP_DATA_FLAG)
-#define EDP_DATA_PART1(data) (EDP_DATA( (uint8_t ) ((data) & 0xff) ))
-#define EDP_DATA_PART2(data) (EDP_DATA( (uint8_t ) (((data) >> 8) & 0xff) ))
-#define EDP_DATA_PART3(data) (EDP_DATA( (uint8_t ) (((data) >> 16) & 0xff) ))
-#define EDP_DATA_PART4(data) (EDP_DATA( (uint8_t ) (((data) >> 24) & 0xff) ))
+#define EDP_DATA_PART1(data) (EDP_DATA( (uint8_t) ((data) & 0xff) ))
+#define EDP_DATA_PART2(data) (EDP_DATA( (uint8_t) (((data) >> 8) & 0xff) ))
+#define EDP_DATA_PART3(data) (EDP_DATA( (uint8_t) (((data) >> 16) & 0xff) ))
+#define EDP_DATA_PART4(data) (EDP_DATA( (uint8_t) (((data) >> 24) & 0xff) ))
 #define EDP_DATA_BUILD18_LOWER(data) ( ((EDP_DATA_PART2((data))) << 9) | EDP_DATA_PART1((data)) )
 #define EDP_DATA_BUILD18_UPPER(data) ( ((EDP_DATA_PART4((data))) << 9) | EDP_DATA_PART3((data)) )
 
