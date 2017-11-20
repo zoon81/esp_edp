@@ -1,7 +1,8 @@
 #ifndef INC_ICONS_H
 #define INC_ICONS_H
 
-#include "user_config.h"
+#include "os_type.h"
+#define RODATA_ATTR  __attribute__((section(".irom.text"))) __attribute__((aligned(4)))
 
 #define WEATHER_ICON_POS_MOSTLYCLOUDY   0
 #define WEATHER_ICON_POS_SUNNY          1

@@ -13,9 +13,12 @@ for line in lines:
 print(array)
 for line in array:
 	for memb in line:
-		m = re.search('[0-9a-fA-F]{2}',memb)
+		m = re.search('0x([0-9a-fA-F]{2})',memb)
 		if m:
-			array2.append(m.group(0))
+			try:
+				array2.append(m.group(1))
+			except AttributeError:
+				continue
 array2len = len(array2)
 print(array2)
 array32 = []

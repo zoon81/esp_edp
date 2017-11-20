@@ -1,7 +1,6 @@
 #ifndef INC_USER_CONFIG_H
 #define INC_USER_CONFIG_H
 
-#define RODATA_ATTR  __attribute__((section(".irom.text"))) __attribute__((aligned(4)))
 
 #include "ets_sys.h"
 #include "osapi.h"

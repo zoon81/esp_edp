@@ -35,7 +35,7 @@ void ICACHE_FLASH_ATTR user_init()
   draw_icon(0, 0, &weather_icons, WEATHER_ICON_POS_MOSTLYCLOUDY);
   draw_icon(100, 0, &weather_icons, WEATHER_ICON_POS_SUNNY);
   draw_icon(0, 100, &weather_icons, WEATHER_ICON_POS_RAINY);
-  draw_icon(100, 100, &weather_icons, WEATHER_ICON_POS_SNOWY);
-
+  draw_number(100,100, 23, &numbers24);
+  draw_string(100, 134, "BP HU", &font16);
   edp_displayFrame();
 }

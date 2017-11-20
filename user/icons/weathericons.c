@@ -373,7 +373,8 @@ const uint32_t RODATA_ATTR rainy32[] = {
     0xfffc03ff, 0xfff007ff, 0xffc01fff,
     0xfffe03ff, 0xfff80fff, 0xffe03fff,
     0xffff0fff, 0xfffc3fff, 0xfff87fff};
-const uint32_t RODATA_ATTR snowy32[] = {0xffffffff, 0xffff80ff, 0xffffffff,
+const uint32_t RODATA_ATTR snowy32[] = { 
+    0xffffffff, 0xffff80ff, 0xffffffff,
                             0xffffffff, 0xfff8000f, 0xffffffff,
                             0xffffffff, 0xffe00003, 0xffffffff,
                             0xffffffff, 0xff800000, 0xffffffff,
