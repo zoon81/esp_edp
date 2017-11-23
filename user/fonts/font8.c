@@ -1,6 +1,6 @@
 #include "user_config.h"
 
-const uint8_t Font8_Table[] = 
+/* const uint8_t Font8_Table[] = 
 {
 	// @0 ' ' (5 pixels wide)
 	0x00, //      
@@ -951,5 +951,5 @@ const uint8_t Font8_Table[] =
 	0x00, //      
 	0x00, //      
 	0x00, //      
-};
-const font_t font8 = {1, 8, 8, Font8_Table};
+}; */
+/* const font_t font8 = {1, 8, 8, Font8_Table}; */

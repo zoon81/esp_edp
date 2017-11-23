@@ -1,6 +1,6 @@
 #include "user_config.h"
 
-const uint8_t Font20_Table[] = 
+/* const uint8_t Font20_Table[] = 
 {
 	// @0 ' ' (14 pixels wide)
 	0x00, 0x00, //               
@@ -2093,4 +2093,4 @@ const uint8_t Font20_Table[] =
 	0x00, 0x00, //               
 };
 
-const font_t font16 = {2, 20, 16, Font20_Table};
+const font_t font16 = {2, 20, 16, Font20_Table}; */
