@@ -9,7 +9,9 @@
         "os_type.h": "c",
         "spi.h": "c",
         "user_interface.h": "c",
-        "fonts.h": "c"
+        "fonts.h": "c",
+        "jsonparse.h": "c",
+        "weatherwidget.h": "c"
     },
     "C_Cpp.intelliSenseEngine": "Default"
 }

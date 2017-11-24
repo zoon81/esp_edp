@@ -11,6 +11,7 @@ void scanCB(void *arg, STATUS status);
 void initDone();
 void eventHandler(System_Event_t *event);
 void wifi_is_ready();
+void ICACHE_FLASH_ATTR owm_http_callback(char * response_body, int http_status, char * response_headers, int body_size);
 
 struct Entry myArray = {
     1, 200, {demotable}};
@@ -86,9 +87,10 @@ void eventHandler(System_Event_t *event)
     break;
   }
 }
-void wifi_is_ready(){
+
+void wifi_is_ready()
+{
   struct ip_info ipconfig;
   wifi_get_ip_info(STATION_IF, &ipconfig);
   os_printf("IP: %d.%d.%d.%d\n", IP2STR(&(ipconfig.ip.addr)));
-  http_get("http://wtfismyip.com/text", "", http_callback_example);
 }

@@ -4,3 +4,14 @@
 *.py~
 *.bin
 
+build/blinky.out
+build/blinky_app.a
+build/user/ui.o
+build/user/user_main.o
+build/user/driver/epd.o
+build/user/fonts/font16.o
+build/user/fonts/font8.o
+build/user/HAL/spi.o
+build/user/icons/weathericons.o
+firmware/0x00000.bin
+firmware/0x10000.bin
