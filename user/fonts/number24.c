@@ -1,4 +1,5 @@
 #include "fonts.h"
+// This file containing numbers only character bitmaps
 
 const uint32_t RODATA_ATTR numbers32_table[] =
     {

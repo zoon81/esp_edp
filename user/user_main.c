@@ -39,14 +39,14 @@ void ICACHE_FLASH_ATTR user_init()
 
   //draw_string(0,10, "HELLO FONT16", &font16);
   //draw_string(0,27, "HELLO FONT8", &font8);
-  draw_icon(0, 0, &clear_sky.icon_96);
-  draw_icon(0, 100, &clear_sky.icon_64);
+  //draw_icon(0, 0, &clear_sky.icon_96);
+  //draw_icon(0, 100, &clear_sky.icon_64);
 
   //draw_icon(100, 0, &weather_icons, WEATHER_ICON_POS_SUNNY);
   //draw_icon(0, 100, &weather_icons, WEATHER_ICON_POS_RAINY);
   //draw_number(100, 100, 23, &numbers24);
   //draw_string(100, 134, "BP HU", &font16);
-  edp_displayFrame();
+  //edp_displayFrame();
 }
 
 void initDone()
@@ -93,4 +93,5 @@ void wifi_is_ready()
   struct ip_info ipconfig;
   wifi_get_ip_info(STATION_IF, &ipconfig);
   os_printf("IP: %d.%d.%d.%d\n", IP2STR(&(ipconfig.ip.addr)));
+  owm_getWeatherinfo(0);
 }

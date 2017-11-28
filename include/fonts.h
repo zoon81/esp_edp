@@ -1,5 +1,6 @@
 #ifndef INC_FONTS_H
 #define INC_FONTS_H
+// Basic Font types and font collections definitions
 
 #include "os_type.h"
 

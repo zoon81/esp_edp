@@ -1,7 +1,7 @@
 #include "weathericons.h"
 
 // Flat Weather Icon Set by Roy Soetantio
-// This file contain imaga bitmap and imaga strucures
+// This file contain imaga bitmaps and image strucures
 
 const uint8_t mostlycloudy[] = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -502,4 +502,12 @@ const uint32_t RODATA_ATTR snowy96[] = {
 const weather_icons_collection_t clear_sky = {
     {96, 96, clear_sky96},
     {48, 48, clear_sky48}
+};
+const weather_icons_collection_t few_clouds = {
+    {96, 96, rainy96},
+    {96, 96, rainy96}
+};
+const weather_icons_collection_t scattered_clouds = {
+    {96, 96, snowy96},
+    {96, 96, snowy96}
 };
