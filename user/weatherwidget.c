@@ -10,9 +10,9 @@ void owm_getWeatherinfo(uint16_t cityID){
 }
 
 void weatherwidget_updateUI(){
-    draw_number(WW_POS_CURRENT_TEMP_X,WW_POS_CURRENT_TEMP_Y, ui.temp, &numbers24);
-    draw_number(WW_POS_CURRENT_MIN_TEMP_X,WW_POS_CURRENT_MIN_TEMP_Y,ui.temp_max, &numbers24);
-    draw_number(WW_POS_CURRENT_MAX_TEMP_X,WW_POS_CURRENT_MAX_TEMP_Y,ui.temp_min, &numbers24);
+    draw_number(WW_POS_CURRENT_TEMP_X,WW_POS_CURRENT_TEMP_Y, ui.temp, &numbers72, UI_SHOW_SIGN);
+    draw_number(WW_POS_CURRENT_MIN_TEMP_X,WW_POS_CURRENT_MIN_TEMP_Y,ui.temp_max, &numbers24, UI_SHOW_SIGN);
+    draw_number(WW_POS_CURRENT_MAX_TEMP_X,WW_POS_CURRENT_MAX_TEMP_Y,ui.temp_min, &numbers24, UI_SHOW_SIGN);
     draw_icon(WW_POS_CURRENT_ICON_X,WW_POS_CURRENT_ICON_Y, ui.icon);
     edp_displayFrame();
 }
@@ -53,15 +53,15 @@ void ICACHE_FLASH_ATTR owm_http_callback_current(char * response_body, int http_
 const icon_t* getIconByID(uint8_t icon_id){
     // http://openweathermap.org/weather-conditions
     switch(icon_id){
-        case 1:     return &clear_sky.icon_96; break;            // clear sky
-        case 2:     return &few_clouds.icon_96; break;           // few clouds
-        case 3:     return &scattered_clouds.icon_96; break;     // scattered clouds
-        case 4:     return &scattered_clouds.icon_96; break;     // broken clouds
-        case 9:     return &scattered_clouds.icon_96; break;     // shower rain
-        case 10:    return &scattered_clouds.icon_96; break;     // rain
-        case 11:    return &scattered_clouds.icon_96; break;     // thunderstorm
-        case 13:    return &scattered_clouds.icon_96; break;     // snow
-        case 50:    return &scattered_clouds.icon_96; break;     // mist
+        case 1:     return &clear_sky.icon_96; break;           // clear sky
+        case 2:     return &few_clouds.icon_96; break;          // few clouds
+        case 3:     return &scattered_clouds.icon_96; break;    // scattered clouds
+        case 4:     return &broken_clouds.icon_96; break;       // broken clouds
+        case 9:     return &shower_rain.icon_96; break;         // shower rain
+        case 10:    return &rain.icon_96; break;                // rain
+        case 11:    return &thunderstorm.icon_96; break;        // thunderstorm
+        case 13:    return &snow.icon_96; break;                // snow
+        case 50:    return &mist.icon_96; break;                // mist
         default:    return &clear_sky.icon_96; break; 
     }
 }

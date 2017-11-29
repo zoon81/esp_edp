@@ -2,7 +2,7 @@
 /*******************************************************************************
 * image
 * filename: unsaved
-* name: partlycloud48
+* name: partlycloud_48
 *
 * preset name: Monochrome
 * data block size: 8 bit(s), uint8_t
@@ -28,7 +28,7 @@
 
 
 
-static const uint8_t image_data_partlycloud48[288] = {
+static const uint8_t image_data_partlycloud_48[288] = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
@@ -78,5 +78,5 @@ static const uint8_t image_data_partlycloud48[288] = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff
 };
-const tImage partlycloud48 = { image_data_partlycloud48, 48, 48,
+const tImage partlycloud_48 = { image_data_partlycloud_48, 48, 48,
     8 };

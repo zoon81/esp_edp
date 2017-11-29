@@ -2,7 +2,7 @@
 /*******************************************************************************
 * image
 * filename: unsaved
-* name: rainsnow48
+* name: rainsnow_48
 *
 * preset name: Monochrome
 * data block size: 8 bit(s), uint8_t
@@ -28,7 +28,7 @@
 
 
 
-static const uint8_t image_data_rainsnow48[288] = {
+static const uint8_t image_data_rainsnow_48[288] = {
     0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 
     0xff, 0xff, 0xf8, 0x00, 0xff, 0xff, 
     0xff, 0xff, 0xf0, 0x00, 0x7f, 0xff, 
@@ -78,5 +78,5 @@ static const uint8_t image_data_rainsnow48[288] = {
     0xff, 0x3f, 0xfe, 0x7f, 0xf8, 0x7f, 
     0xff, 0x3f, 0xfe, 0x7f, 0xfc, 0xff
 };
-const tImage rainsnow48 = { image_data_rainsnow48, 48, 48,
+const tImage rainsnow_48 = { image_data_rainsnow_48, 48, 48,
     8 };

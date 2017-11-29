@@ -23,5 +23,11 @@ typedef struct {
 extern const weather_icons_collection_t clear_sky;
 extern const weather_icons_collection_t few_clouds;
 extern const weather_icons_collection_t scattered_clouds;
+extern const weather_icons_collection_t broken_clouds;
+extern const weather_icons_collection_t shower_rain;
+extern const weather_icons_collection_t rain;
+extern const weather_icons_collection_t thunderstorm;
+extern const weather_icons_collection_t snow;
+extern const weather_icons_collection_t mist;
 
 #endif

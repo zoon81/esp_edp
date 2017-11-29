@@ -2,7 +2,7 @@
 /*******************************************************************************
 * image
 * filename: unsaved
-* name: snowy48
+* name: snowy_48
 *
 * preset name: Monochrome
 * data block size: 8 bit(s), uint8_t
@@ -28,7 +28,7 @@
 
 
 
-static const uint8_t image_data_snowy48[288] = {
+static const uint8_t image_data_snowy_48[288] = {
     0xff, 0xff, 0xff, 0x07, 0xff, 0xff, 
     0xff, 0xff, 0xf8, 0x00, 0xff, 0xff, 
     0xff, 0xff, 0xf0, 0x00, 0x7f, 0xff, 
@@ -78,5 +78,5 @@ static const uint8_t image_data_snowy48[288] = {
     0xff, 0x3f, 0xfe, 0x7f, 0xfc, 0xff, 
     0xff, 0x3f, 0xfe, 0x7f, 0xfc, 0xff
 };
-const tImage snowy48 = { image_data_snowy48, 48, 48,
+const tImage snowy_48 = { image_data_snowy_48, 48, 48,
     8 };

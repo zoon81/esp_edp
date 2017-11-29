@@ -1,4 +1,7 @@
-const uint32_t RODATA_ATTR number72_table[] = {
+#include "fonts.h"
+// This file containing numbers only character bitmaps
+
+const uint32_t RODATA_ATTR numbers72_table[] = {
 		0x00000000, 0x00000018, 0x00000003,
 		0xffc00000, 0x0ffff000, 0x001ffff8,
 		0x00003fff, 0xfc00007f, 0xfffe0000,
@@ -233,3 +236,4 @@ const uint32_t RODATA_ATTR number72_table[] = {
 		0xf0000003, 0xff800000, 0x03c00000,
 		0x00000000, 0x00000000, 0x00000000,
 		0x00000000};
+const font32_t numbers72 = {40, 56, 40, numbers72_table};
