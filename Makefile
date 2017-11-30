@@ -16,7 +16,7 @@
 # relative to the project directory
 BUILD_BASE	= build
 FW_BASE		= firmware
-HOME_FOLDER = /Users/zoon81
+HOME_FOLDER = $(HOME)
 
 # base directory for the compiler
 #XTENSA_TOOLS_ROOT ?= /home/t400/ESP8266/esp-open-sdk/xtensa-lx106-elf/bin/
