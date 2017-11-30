@@ -16,12 +16,14 @@
 # relative to the project directory
 BUILD_BASE	= build
 FW_BASE		= firmware
+HOME_FOLDER = /Users/zoon81
 
 # base directory for the compiler
-XTENSA_TOOLS_ROOT ?= /home/t400/ESP8266/esp-open-sdk/xtensa-lx106-elf/bin/
+#XTENSA_TOOLS_ROOT ?= /home/t400/ESP8266/esp-open-sdk/xtensa-lx106-elf/bin/
+XTENSA_TOOLS_ROOT ?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/xtensa-lx106-elf/bin/
 
 # base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= /home/t400/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/
+SDK_BASE	?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/
 
 # esptool.py path and port
 ESPTOOL		?= esptool.py
