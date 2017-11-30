@@ -1,7 +1,7 @@
 #include "fonts.h"
 // This file containing numbers only character bitmaps
 
-const uint32_t RODATA_ATTR number72_table[] = {
+const uint32_t RODATA_ATTR numbers72_table[] = {
 		0xffffffff, 0xffffffff, 0xffffffff,
 		0xffffffff, 0xffffffff, 0xffffffff,
 		0xffffffff, 0xffffffff, 0xffffffff,

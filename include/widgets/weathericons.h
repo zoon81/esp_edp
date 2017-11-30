@@ -29,5 +29,6 @@ extern const weather_icons_collection_t rain;
 extern const weather_icons_collection_t thunderstorm;
 extern const weather_icons_collection_t snow;
 extern const weather_icons_collection_t mist;
+extern const icon_t celsius_symbol;
 
 #endif

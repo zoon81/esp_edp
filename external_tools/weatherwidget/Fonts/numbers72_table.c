@@ -1,9 +1,9 @@
 
 /*******************************************************************************
 * font
-* filename: /Users/zoon81/esp_edp/external_tools/weatherwidget/Fonts/FontNumberBig.xml
+* filename: /home/zoon81/esp_edp/external_tools/weatherwidget/Fonts/FontNumberBig.xml
 * name: FontNumberBig
-* family: .SF NS Text
+* family: Ubuntu
 * size: 72
 * style: Bold
 * included characters: 0123456789+-
@@ -21,7 +21,7 @@
 * preprocess:
 *  main scan direction: top_to_bottom
 *  line scan direction: forward
-*  inverse: yes
+*  inverse: no
 *******************************************************************************/
 
 /*

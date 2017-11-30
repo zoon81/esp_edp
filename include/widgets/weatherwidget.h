@@ -2,7 +2,7 @@
 #define INC_WEATHERWIDGET_H
 
 #include "os_type.h"
-#include "weathericons.h"
+#include "widgets/weathericons.h"
 #include "widgets/openweathermap.h"
 #include "widgets/timezonedb.h"
 #include "http.h"
@@ -13,7 +13,7 @@
 // Default positioning for the widget
 #define WW_POS_CURRENT_TEMP_X 0
 #define WW_POS_CURRENT_TEMP_Y 0
-#define WW_POS_CELSIUS_X 72
+#define WW_POS_CELSIUS_X 80
 #define WW_POS_CELSIUS_Y 0
 #define WW_POS_CURRENT_MAX_TEMP_X 64
 #define WW_POS_CURRENT_MAX_TEMP_Y 60
