@@ -1,5 +1,6 @@
 #ifndef INC_FONTS_H
 #define INC_FONTS_H
+// Basic Font types and font collections definitions
 
 #include "os_type.h"
 
@@ -22,5 +23,6 @@ typedef struct {
 extern const font_t font8;
 extern const font_t font16;
 extern const font32_t numbers24;
+extern const font32_t numbers72;
 
 #endif /* __FONTS_H */
