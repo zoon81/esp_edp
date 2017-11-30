@@ -12,7 +12,8 @@
         "fonts.h": "c",
         "jsonparse.h": "c",
         "weatherwidget.h": "c",
-        "itoa.h": "c"
+        "itoa.h": "c",
+        "weathericons.h": "c"
     },
     "C_Cpp.intelliSenseEngine": "Default"
 }

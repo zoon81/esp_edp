@@ -1,4 +1,4 @@
-#include "weathericons.h"
+#include "widgets/weathericons.h"
 
 // Flat Weather Icon Set by Roy Soetantio
 // This file contain imaga bitmaps and image strucures
@@ -1100,7 +1100,13 @@ const uint32_t RODATA_ATTR stormy_96[] = {
 		0xffffffff, 0xefffffff, 0xffffffff,
 		0xffffffff, 0xffffffff, 0xffffffff,
 		0xffffffff, 0xffffffff, 0xffffffff};
-
+const uint32_t RODATA_ATTR Celsius_24[] = {
+		0xc3ffff81, 0xffff18ff, 0xff3cffff,
+		0x3cf00118, 0xe0018180, 0x01c381fb,
+		0xff87ffff, 0x07fffe0f, 0xfffe0fff,
+		0xfe0ffffe, 0x0ffffe0f, 0xfffe0fff,
+		0xfe07ffff, 0x07ffff87, 0xffff80e1,
+		0xff8001ff, 0xe001fff8, 0x07ffffff};
 const weather_icons_collection_t clear_sky = {
     {96, 96, fair_96},
     {48, 48, fair_48}
@@ -1137,3 +1143,4 @@ const weather_icons_collection_t mist = {
     {96, 96, fog_96},
     {48, 48, fog_48}
 };
+const icon_t celsius_symbol = {24, 24, Celsius_24};

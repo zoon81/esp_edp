@@ -62,11 +62,11 @@ void int8_to_str(char *buffer, int8_t number)
 	if (number & 0x80)
 	{						 //If the sign bit 1 this is a negative number
 		number = number & 0x7F; //Get the abs. value
-				 uint8_to_str(buffer, number);
+		uint8_to_str(buffer, number);
 		int i = 4;
 		while (i--)
 		{
-			buffer[i] = buffer[i + 1];
+			buffer[i+1] = buffer[i];
 		}
 		buffer[i] = '-';
 	}

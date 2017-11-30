@@ -20,36 +20,39 @@ void draw_string(uint8_t x, uint8_t y, uint8_t *str, const font_t *font)
 //updated font bitmap first 2 chars are + -
 void draw_number(uint8_t x, uint8_t y, int8_t number, const font32_t *font, uint8_t showsignifpositive)
 {
-    char buffer[5];
+    char buffer[5] = {0,0,0,0,0} ;
     uint8_t i = 4;
     uint16_t offset = 0;
     int chr_offset;
     int8_to_str(buffer, number);
+    os_printf("BUF:%c%c%c%c%c",buffer[0],buffer[1],buffer[2],buffer[3],buffer[4]);
     if (showsignifpositive)
     {
         while (i--)
         {
-            buffer[i] = buffer[i + 1];
+            buffer[i+1] = buffer[i];
         }
-        buffer[i] = '+';
+        buffer[0] = '+';
+        //buffer[i] = '+' not work... but why not? i get some wierd value? but where?
     }
-    os_printf("Buffer:%s ",buffer);
+    i = 0;
+    os_printf("BUF:%c%c%c%c%c",buffer[0],buffer[1],buffer[2],buffer[3],buffer[4]);
     while (buffer[i])
     {
-        if (buffer[i] == '-')
+        if (buffer[i] == '+')
         {
-            chr_offset = 12 * ((font->font_x_size * font->font_y_size) / 32);
+            chr_offset = 0;
         }
-        else if (buffer[i] == '+')
+        else if (buffer[i] == '-')
         {
-            chr_offset = 11 * ((font->font_x_size * font->font_y_size) / 32);
+            chr_offset = (font->font_x_size * font->font_y_size) / 32;
         }
         else
         {
-            chr_offset = (buffer[i] - 48) * ((font->font_x_size * font->font_y_size) / 32);
+            chr_offset = (buffer[i] - 48 + 2) * ((font->font_x_size * font->font_y_size) / 32);
         }
-        //os_printf("char_offset=%d", chr_offset);
-        edp_setFrameMemory32(x + offset, y, x + offset + font->font_x_size, y + font->font_y_size, &(*font).table[chr_offset], 1);
+        os_printf("char_offset=%d", chr_offset);
+        edp_setFrameMemory32(x + offset, y, x + offset + font->font_x_size, y + font->font_y_size, &(*font).table[chr_offset], 0);
         i++;
         offset += font->width_in_px;
     }

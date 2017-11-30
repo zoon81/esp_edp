@@ -5,12 +5,13 @@ weatherwidget_ui_t ui;
 
 void owm_getWeatherinfo(uint16_t cityID){
     char url_current[] = OWM_WEATHER_BASEURL OWM_CITY_ID_BUDAPEST_IX OWM_API_KEY OWM_METRIC_UNIT;
-    http_get(url_current, "", &owm_http_callback_current);
+    http_get(url_current, "", &owm_http_callback_current);  //what happend if no internet access?
     //http_get(url_forecast, "", &owm_http_callback_forecast);
 }
 
 void weatherwidget_updateUI(){
     draw_number(WW_POS_CURRENT_TEMP_X,WW_POS_CURRENT_TEMP_Y, ui.temp, &numbers72, UI_SHOW_SIGN);
+    draw_icon(WW_POS_CELSIUS_X, WW_POS_CELSIUS_Y, &celsius_symbol);
     draw_number(WW_POS_CURRENT_MIN_TEMP_X,WW_POS_CURRENT_MIN_TEMP_Y,ui.temp_max, &numbers24, UI_SHOW_SIGN);
     draw_number(WW_POS_CURRENT_MAX_TEMP_X,WW_POS_CURRENT_MAX_TEMP_Y,ui.temp_min, &numbers24, UI_SHOW_SIGN);
     draw_icon(WW_POS_CURRENT_ICON_X,WW_POS_CURRENT_ICON_Y, ui.icon);

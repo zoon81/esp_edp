@@ -10,7 +10,7 @@
 #include "HAL/spi.h"
 #include "driver/edp.h"
 #include "fonts.h"
-#include "weathericons.h"
+#include "widgets/weathericons.h"
 #include "ui.h"
 #include "http.h"
 
