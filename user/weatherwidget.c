@@ -6,6 +6,7 @@ weatherwidget_ui_t ui;
 void owm_getWeatherinfo(uint16_t cityID){
     char url_current[] = OWM_WEATHER_BASEURL OWM_CITY_ID_BUDAPEST_IX OWM_API_KEY OWM_METRIC_UNIT;
     http_get(url_current, "", &owm_http_callback_current);
+    http_get(TZDB_URL(BP_LAT,BP_LNG), "", &timezone_db_callback);
     //http_get(url_forecast, "", &owm_http_callback_forecast);
 }
 
@@ -66,3 +67,16 @@ const icon_t* getIconByID(uint8_t icon_id){
     }
 }
 // https://darksky.net/dev/docs#response-format
+
+void ICACHE_FLASH_ATTR timezone_db_callback(char * response_body, int http_status, char * response_headers, int body_size)
+{
+	os_printf("http_status=%d\n", http_status);
+	if (http_status != HTTP_STATUS_GENERIC_ERROR) {
+		os_printf("strlen(headers)=%d\n", strlen(response_headers));
+		os_printf("body_size=%d\n", body_size);
+		os_printf("body=%s<EOF>\n", response_body); // FIXME: this does not handle binary data.
+        char date_time[20];
+        json_getValue(response_body, TZDB_JSON_FORMATTED_DATE_TIME, date_time, 20);
+    }
+}
+    

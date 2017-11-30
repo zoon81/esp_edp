@@ -4,6 +4,7 @@
 #include "os_type.h"
 #include "weathericons.h"
 #include "widgets/openweathermap.h"
+#include "widgets/timezonedb.h"
 #include "http.h"
 #include "ui.h"
 #include "fonts.h"
@@ -40,6 +41,10 @@
 #define WW_POS_DAY3_MAX_TEMP_Y 160
 #define WW_POS_DAY3_MIN_TEMP_X 156
 #define WW_POS_DAY3_MIN_TEMP_Y 184
+
+//demo data
+#define BP_LAT 47.4607
+#define BP_LNG 19.1148
 
 // weather widget UI data
 typedef struct{
