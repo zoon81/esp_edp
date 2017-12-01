@@ -121,10 +121,11 @@ void edp_setFrameMemory32(uint8_t x, uint8_t y, uint8_t x_end, uint8_t y_end, co
 
 void edp_displayFrame(void)
 {
+    os_printf("Updating Frame");
     spi_transaction(HSPI, 0, 0, 9, DISPLAY_UPDATE_CONTROL_2, 9, EDP_DATA(0xC4), 0, 0);
     spi_transaction(HSPI, 0, 0, 0, 0, 9, MASTER_ACTIVATION, 0, 0);
     spi_transaction(HSPI, 0, 0, 0, 0, 9, TERMINATE_FRAME_READ_WRITE, 0, 0);
-    edp_waitUntilIdle();
+    edp_waitUntilIdle(); // this is blocking
 }
 //waiting until the display processing data (Busy pin set HI)
 void edp_waitUntilIdle()

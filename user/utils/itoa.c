@@ -28,13 +28,13 @@ void uint8_to_str(char *buffer, uint8_t number)
 		*buffer = 0; //string termination
 	}
 }
-void uint16_to_str(char *buffer, uint32_t number)
+void uint_to_str(char *buffer, uint32_t number)
 {
 	//this is a realy big number?
 	if (number > 255)
 	{
 		//how long is the number?
-		uint32_t divider = 100;
+		uint64_t divider = 100;
 		uint8_t number_len = 2;
 		while (number / divider)
 		{

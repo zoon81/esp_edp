@@ -16,7 +16,7 @@ typedef struct{
 // This type represent an icon collection which is including a bigger icon and a smaller one
 typedef struct {
     icon_t icon_96;
-    icon_t icon_64;
+    icon_t icon_48;
 } weather_icons_collection_t;
 
 // Weather icons
@@ -26,6 +26,7 @@ extern const weather_icons_collection_t scattered_clouds;
 extern const weather_icons_collection_t broken_clouds;
 extern const weather_icons_collection_t shower_rain;
 extern const weather_icons_collection_t rain;
+extern const weather_icons_collection_t hail;
 extern const weather_icons_collection_t thunderstorm;
 extern const weather_icons_collection_t snow;
 extern const weather_icons_collection_t mist;

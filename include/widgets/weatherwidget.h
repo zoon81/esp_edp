@@ -2,9 +2,11 @@
 #define INC_WEATHERWIDGET_H
 
 #include "os_type.h"
+#include "osapi.h"
 #include "widgets/weathericons.h"
 #include "widgets/openweathermap.h"
 #include "widgets/timezonedb.h"
+#include "widgets/darkskynet.h"
 #include "http.h"
 #include "ui.h"
 #include "fonts.h"
@@ -43,8 +45,8 @@
 #define WW_POS_DAY3_MIN_TEMP_Y 184
 
 //demo data
-#define BP_LAT 47.4607
-#define BP_LNG 19.1148
+#define BP_LAT "47.4607"
+#define BP_LNG "19.1148"
 
 // weather widget UI data
 typedef struct{
@@ -72,5 +74,9 @@ void owm_getWeatherinfo(uint16_t cityID);
 void weatherwidget_updateUI();
 void ICACHE_FLASH_ATTR owm_http_callback_current(char * response_body, int http_status, char * response_headers, int body_size);
 const icon_t* getIconByID(uint8_t icon_id);
+void ICACHE_FLASH_ATTR timezone_db_callback(char * response_body, int http_status, char * response_headers, int body_size);
+void ICACHE_FLASH_ATTR darkskynet_callback_day1(char * response_body, int http_status, char * response_headers, int body_size);
+void ds_get_icon_by_id(char *tmp);
+void darkskynet_url_build(char *lat, char *lng, uint32_t unixtime, uint8_t day_offset, char *url);
 
 #endif

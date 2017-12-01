@@ -6,10 +6,9 @@
 #define TZDB_BY "&by=position"
 #define TZDB_LAT "&lat="
 #define TZDB_LNG "&lng="
-#define TZDB_FIELDS "&fields=formatted"
+#define TZDB_FIELDS "&fields=formatted,timestamp"
 // {"status":"OK","message":"","formatted":"2017-11-30 21:03:58"}
 #define TZDB_JSON_FORMATTED_DATE_TIME ":formatted"
-
-#define TZDB_URL(lat, lng) TZDB_BASEURL TZDB_JSONFORMAT TZDB_BY TZDB_LAT (lat) TZDB_LNG (lng) TZDB_FIELDS
+#define TZDB_JSON_TIMESTAMP ":timestamp"
 
 #endif

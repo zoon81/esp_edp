@@ -1113,7 +1113,7 @@ const weather_icons_collection_t clear_sky = {
 };
 const weather_icons_collection_t few_clouds = {
     {96, 96, partlycloud_96},
-    {96, 96, partlycloud_48}
+    {48, 48, partlycloud_48}
 };
 const weather_icons_collection_t scattered_clouds = {
     {96, 96, snowy_96},
@@ -1142,5 +1142,9 @@ const weather_icons_collection_t snow = {
 const weather_icons_collection_t mist = {
     {96, 96, fog_96},
     {48, 48, fog_48}
+};
+const weather_icons_collection_t hail = {
+	{96, 96, hail_96},
+	{48, 48, hail_48}
 };
 const icon_t celsius_symbol = {24, 24, Celsius_24};

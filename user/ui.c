@@ -26,14 +26,14 @@ void draw_number(uint8_t x, uint8_t y, int8_t number, const font32_t *font, uint
     int chr_offset;
     int8_to_str(buffer, number);
     os_printf("BUF:%c%c%c%c%c",buffer[0],buffer[1],buffer[2],buffer[3],buffer[4]);
-    if (showsignifpositive)
+    if (showsignifpositive & !(number < 0) )
     {
         while (i--)
         {
             buffer[i+1] = buffer[i];
         }
         buffer[0] = '+';
-        //buffer[i] = '+' not work... but why not? i get some wierd value? but where?
+        //buffer[i] = '+' not work... but why not? "i" get some wierd value? but where?
     }
     i = 0;
     os_printf("BUF:%c%c%c%c%c",buffer[0],buffer[1],buffer[2],buffer[3],buffer[4]);
