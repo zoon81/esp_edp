@@ -53,7 +53,7 @@ void initDone()
 {
   wifi_set_opmode_current(STATION_MODE);
   struct station_config stationConfig;
-  strncpy(stationConfig.ssid, "THECORE", 32);
+  strncpy(stationConfig.ssid, "THECORE_2.4", 32);
   strncpy(stationConfig.password, "sp33dlink", 64);
   wifi_station_set_config(&stationConfig);
   wifi_station_connect();

@@ -8,7 +8,7 @@
 #define DS_OPTS     DS_UNITS DS_EXCLUDE DS_LANG
 
 #define DS_JSON_TEMPMAX ":daily:data:temperatureMax"
-#define DS_JSON_TEMPMIN ":daily:data:temperatureMinTime"
+#define DS_JSON_TEMPMIN ":daily:data:temperatureMin"
 #define DS_JSON_ICON ":daily:data:icon"
 
 // https://darksky.net/dev/docs#response-format

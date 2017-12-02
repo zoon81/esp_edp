@@ -22,6 +22,7 @@ typedef struct {
 
 extern const font_t font8;
 extern const font_t font16;
+extern const font32_t numbers14;
 extern const font32_t numbers24;
 extern const font32_t numbers72;
 

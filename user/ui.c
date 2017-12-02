@@ -20,7 +20,7 @@ void draw_string(uint8_t x, uint8_t y, uint8_t *str, const font_t *font)
 //updated font bitmap first 2 chars are + -
 void draw_number(uint8_t x, uint8_t y, int8_t number, const font32_t *font, uint8_t showsignifpositive)
 {
-    char buffer[5] = {0,0,0,0,0} ;
+    char buffer[5] = {0} ;
     uint8_t i = 4;
     uint16_t offset = 0;
     int chr_offset;

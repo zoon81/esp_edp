@@ -48,6 +48,12 @@
 #define BP_LAT "47.4607"
 #define BP_LNG "19.1148"
 
+#define RESPONSE_STATUS_CURRENT_DONE (1 << 0)
+#define RESPONSE_STATUS_DAY1_DONE (1 << 1)
+#define RESPONSE_STATUS_DAY2_DONE (1 << 2)
+#define RESPONSE_STATUS_DAY3_DONE (1 << 3)
+#define RESPONSE_STATUS_FINISHED 0X0F
+
 // weather widget UI data
 typedef struct{
     //Current day data
@@ -76,7 +82,9 @@ void ICACHE_FLASH_ATTR owm_http_callback_current(char * response_body, int http_
 const icon_t* getIconByID(uint8_t icon_id);
 void ICACHE_FLASH_ATTR timezone_db_callback(char * response_body, int http_status, char * response_headers, int body_size);
 void ICACHE_FLASH_ATTR darkskynet_callback_day1(char * response_body, int http_status, char * response_headers, int body_size);
-void ds_get_icon_by_id(char *tmp);
+void ICACHE_FLASH_ATTR darkskynet_callback_day2(char * response_body, int http_status, char * response_headers, int body_size);
+void ICACHE_FLASH_ATTR darkskynet_callback_day3(char * response_body, int http_status, char * response_headers, int body_size);
+const icon_t *ds_get_icon_by_id(char *tmp);
 void darkskynet_url_build(char *lat, char *lng, uint32_t unixtime, uint8_t day_offset, char *url);
 
 #endif
