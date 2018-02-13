@@ -15,7 +15,11 @@
         "itoa.h": "c",
         "weathericons.h": "c",
         "darkskynet.h": "c",
-        "edp.h": "c"
+        "edp.h": "c",
+        "spiffs_nucleus.h": "c",
+        "esp_spiffs.h": "c",
+        "spiffs.h": "c",
+        "spiffs_config.h": "c"
     },
     "C_Cpp.intelliSenseEngine": "Default"
 }

@@ -13,6 +13,8 @@
 #include "widgets/weathericons.h"
 #include "ui.h"
 #include "http.h"
+#include "esp_spiffs/esp_spiffs.h"
+#include <fcntl.h>
 
 void some_timerfunc(void *arg);
 void ICACHE_FLASH_ATTR user_init();

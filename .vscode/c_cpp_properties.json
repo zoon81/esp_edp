@@ -6,8 +6,8 @@
                 "${workspaceRoot}/include",
                 "${workspaceRoot}/user",
                 "${workspaceRoot}/user/HAL",
-                "${workspaceRoot}/user/driver"
-                
+                "${workspaceRoot}/user/driver",
+                "${workspaceRoot}/include/spiffs"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",

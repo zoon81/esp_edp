@@ -35,7 +35,7 @@ ESPBAUD		?= 115200
 TARGET		= blinky
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= user user/HAL user/driver user/fonts user/widgets user/utils
+MODULES		= user user/HAL user/driver user/fonts user/widgets user/utils user/esp_spiffs user/esp_spiffs/spiffs
 EXTRA_INCDIR    = include
 
 # libraries used in this project, mainly provided by the SDK
@@ -53,7 +53,7 @@ LD_SCRIPT	= eagle.app.v6.ld
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
 SDK_LDDIR	= ld
-SDK_INCDIR	= include include/json
+SDK_INCDIR	= include include/json driver_lib/include/driver
 
 # we create two different files for uploading into the flash
 # these are the names and options to generate them
@@ -65,6 +65,26 @@ CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
 LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 
+# spiffs configuration
+# If spiffs is configured as SINGLETON it must be configured in compile time.
+SPIFFS_SINGLETON ?= 1
+SPIFFS_BASE_ADDR ?= 0x300000
+SPIFFS_SIZE ?= 0x100000
+SPIFFS_LOG_PAGE_SIZE ?= 256
+SPIFFS_LOG_BLOCK_SIZE ?= 8192
+
+spiffs_CFLAGS += -DSPIFFS_SINGLETON=$(SPIFFS_SINGLETON)
+ifeq ($(SPIFFS_SINGLETON),1)
+# Singleton configuration
+spiffs_CFLAGS += -DSPIFFS_BASE_ADDR=$(SPIFFS_BASE_ADDR)
+spiffs_CFLAGS += -DSPIFFS_SIZE=$(SPIFFS_SIZE)
+endif
+
+spiffs_CFLAGS += -DSPIFFS_LOG_PAGE_SIZE=$(SPIFFS_LOG_PAGE_SIZE)
+spiffs_CFLAGS += -DSPIFFS_LOG_BLOCK_SIZE=$(SPIFFS_LOG_BLOCK_SIZE)
+
+# Main program needs SPIFFS definitions because it includes spiffs_config.h
+CFLAGS += $(spiffs_CFLAGS)
 
 
 ####
