@@ -2,7 +2,7 @@
 #define INC_FONTS_H
 // Basic Font types and font collections definitions
 
-#include "os_type.h"
+#include <os_type.h>
 
 #define RODATA_ATTR  __attribute__((section(".irom.text"))) __attribute__((aligned(4)))
 

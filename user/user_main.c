@@ -20,10 +20,15 @@ struct Entry *myArray_p = &myArray;
 
 void ICACHE_FLASH_ATTR user_init()
 {
+  
+  uint32_t tmp = 0xF0E1D2C3;
+  spi_flash_erase_sector(0x3C);       //erasing 4KBiT from 0x3C000 to 0x3D000, this is ruining the 0x10000.bin FW on the flash XD
+  spi_flash_write(0x3C000, &tmp, 32);
+
   wifi_station_set_config_current(FALSE);
   system_init_done_cb(initDone);
   wifi_set_event_handler_cb(eventHandler);
-  uint32_t tmp = 0x98765432;
+  //uint32_t tmp = 0x98765432;
   /* os_printf("PARTS:%x %x %x %x", EDP_DATA_PART1(tmp), EDP_DATA_PART2(tmp), EDP_DATA_PART3(tmp), EDP_DATA_PART4(tmp));
   os_printf("UPPER: %x LOWER: %x", EDP_DATA_BUILD18_UPPER(tmp), EDP_DATA_BUILD18_LOWER(tmp));
   os_printf("%d%d", myArray.id, myArray.value);

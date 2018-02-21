@@ -15,7 +15,9 @@
         "itoa.h": "c",
         "weathericons.h": "c",
         "darkskynet.h": "c",
-        "edp.h": "c"
+        "edp.h": "c",
+        "spi_flash.h": "c",
+        "http.h": "c"
     },
     "C_Cpp.intelliSenseEngine": "Default"
 }

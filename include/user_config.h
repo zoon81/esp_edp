@@ -5,8 +5,10 @@
 #include "ets_sys.h"
 #include "osapi.h"
 #include "user_interface.h"
-#include "gpio.h"
-#include "os_type.h"
+#include <gpio.h>
+#include <os_type.h>
+#include <spi_flash.h>
+
 #include "HAL/spi.h"
 #include "driver/edp.h"
 #include "fonts.h"

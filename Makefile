@@ -27,8 +27,8 @@ SDK_BASE	?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_1
 
 # esptool.py path and port
 ESPTOOL		?= esptool.py
-ESPPORT		?= /dev/tty.wchusbserial410
-#ESPPORT		?= /dev/ttyUSB0
+#ESPPORT		?= /dev/tty.wchusbserial410
+ESPPORT		?= /dev/ttyUSB0
 ESPBAUD		?= 115200
 
 # name for the target project

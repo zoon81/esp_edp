@@ -1,7 +1,7 @@
 #ifndef INC_WEATHERICONS_H
 #define INC_WEATHERICONS_H
 
-#include "os_type.h"
+#include <os_type.h>
 
 #define RODATA_ATTR  __attribute__((section(".irom.text"))) __attribute__((aligned(4)))
 #define WEATHER_ICON_COLLECTION_ICON_BIG 0
