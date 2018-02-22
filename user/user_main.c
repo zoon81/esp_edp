@@ -1,4 +1,5 @@
 #include "user_config.h"
+#define FS_BASE_ADDRESS 0x63000 
 
 struct Entry
 {
@@ -22,8 +23,7 @@ void ICACHE_FLASH_ATTR user_init()
 {
   
   uint32_t tmp = 0xF0E1D2C3;
-  spi_flash_erase_sector(0x3C);       //erasing 4KBiT from 0x3C000 to 0x3D000, this is ruining the 0x10000.bin FW on the flash XD
-  spi_flash_write(0x3C000, &tmp, 32);
+  spi_flash_write(FS_BASE_ADDRESS, &tmp, 4);
 
   wifi_station_set_config_current(FALSE);
   system_init_done_cb(initDone);

@@ -65,7 +65,15 @@ CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
 LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 
+#General FileSystem stuff
+FS_BASE_DIR = external_tools/spiffs_image
+MKSPIFFS_TOOL = $(HOME)/mkspiffs/mkspiffs
+BLOCK_SIZE = 4096
+PAGE_SIZE = 256
+FS_BINARY = external_tools/spiffs_image.bin
 
+# ESP FileSystem stuff
+FS_BASE_ADDRESS = 0x63000
 
 ####
 #### no user configurable options below here
@@ -134,6 +142,10 @@ $(FW_BASE):
 
 flash: $(FW_FILE_1) $(FW_FILE_2)
 	$(ESPTOOL) --port $(ESPPORT) -b $(ESPBAUD) write_flash $(FW_FILE_1_ADDR) $(FW_FILE_1) $(FW_FILE_2_ADDR) $(FW_FILE_2)
+
+fs_flash:
+	$(MKSPIFFS_TOOL) -c $(FS_BASE_DIR) -b $(BLOCK_SIZE) -p $(PAGE_SIZE) $(FS_BINARY)
+	$(ESPTOOL) --port $(ESPPORT) -b $(ESPBAUD) write_flash $(FS_BASE_ADDRESS) $(FS_BINARY)
 
 clean:
 	$(Q) rm -rf $(FW_BASE) $(BUILD_BASE)

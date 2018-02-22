@@ -2,15 +2,21 @@
     "configurations": [
         {
             "name": "ESP8266",
+            "includePath": [
+                "/home/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/include",
+                "/home/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/driver_lib/include/driver",
+                "${workspaceRoot}/include",
+                "${workspaceRoot}/include/driver",
+                "${workspaceRoot}/include/HAL",
+                "${workspaceRoot}/include/widgets"
+            ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
                     "/home/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/include",
-                    "${workspaceRoot}/include",
-                    "${workspaceRoot}/user",
-                    "${workspaceRoot}/user/HAL",
-                    "${workspaceRoot}/user/driver"
+                    "/home/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/driver_lib/include/driver",
+                    "${workspaceRoot}"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""

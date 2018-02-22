@@ -47,13 +47,9 @@
             }
         }, {
             "taskName": "flash",
-            // Make this the default build command.
             "isBuildCommand": true,
-            // Show the output window only if unrecognized errors occur.
             "showOutput": "always",
-            // No args
             "args": ["flash"],
-            // Use the standard less compilation problem matcher.
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": ["relative", "${workspaceRoot}"],
@@ -67,13 +63,9 @@
                 }
             }
         },{
-            "taskName": "test",
-            // Make this the default build command.
-            "isBuildCommand": true,
-            // Show the output window only if unrecognized errors occur.
+            "taskName": "fs_flash",
             "showOutput": "always",
-            // No args
-            "args": ["test"],
+            "args": ["fs_flash"],
             // Use the standard less compilation problem matcher.
             "problemMatcher": {
                 "owner": "cpp",
