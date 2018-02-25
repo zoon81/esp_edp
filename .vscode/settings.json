@@ -17,7 +17,8 @@
         "darkskynet.h": "c",
         "edp.h": "c",
         "spi_flash.h": "c",
-        "http.h": "c"
+        "http.h": "c",
+        "fs.h": "c"
     },
     "C_Cpp.intelliSenseEngine": "Default"
 }

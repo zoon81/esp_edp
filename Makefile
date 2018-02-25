@@ -27,8 +27,15 @@ SDK_BASE	?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_1
 
 # esptool.py path and port
 ESPTOOL		?= esptool.py
-#ESPPORT		?= /dev/tty.wchusbserial410
-ESPPORT		?= /dev/ttyUSB0
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	ESPPORT		?= /dev/ttyUSB0
+endif
+ifeq ($(UNAME_S),Darwin)
+	ESPPORT		?= /dev/tty.wchusbserial620
+endif
+
 ESPBAUD		?= 115200
 
 # name for the target project
@@ -67,7 +74,7 @@ LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 
 #General FileSystem stuff
 FS_BASE_DIR = external_tools/spiffs_image
-MKSPIFFS_TOOL = $(HOME)/mkspiffs/mkspiffs
+MKSPIFFS_TOOL = mkspiffs
 BLOCK_SIZE = 4096
 PAGE_SIZE = 256
 FS_BINARY = external_tools/spiffs_image.bin

@@ -7,10 +7,10 @@
 #include "user_interface.h"
 #include <gpio.h>
 #include <os_type.h>
-#include <spi_flash.h>
 
 #include "HAL/spi.h"
 #include "driver/edp.h"
+#include "driver/fs.h"
 #include "fonts.h"
 #include "widgets/weathericons.h"
 #include "ui.h"

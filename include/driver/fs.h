@@ -1,3 +1,5 @@
+#ifndef INC_FS_H
+#define INC_FS_H
 /*
 File system implementation based on SPIFFS.
 BLOCK -> PAGE
@@ -21,3 +23,26 @@ Data page structure:
     5-255 : DATA [251byte]
 
 */
+
+#include <os_type.h>
+#include <spi_flash.h>
+#include <osapi.h>
+
+#include <mem.h>
+
+#define FS_BASE_ADDRESS 0x63000
+#define MAX_FILENAME_LEN 64
+#define FS_PAGE_SIZE 255
+
+#define UPPER_16(x) ((x) >> 16)
+#define LOWER_16(x) ((x) & 0x0000FFFF)
+
+typedef struct {
+    char filename[MAX_FILENAME_LEN];
+    uint16_t object_id;
+}fs_index_t;
+
+void fs_init();
+uint8_t fs_load_index_page(uint8_t indexpage_offset, uint16_t *object_ids);
+
+#endif

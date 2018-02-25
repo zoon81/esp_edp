@@ -1,5 +1,4 @@
 #include "user_config.h"
-#define FS_BASE_ADDRESS 0x63000 
 
 struct Entry
 {
@@ -12,7 +11,7 @@ void scanCB(void *arg, STATUS status);
 void initDone();
 void eventHandler(System_Event_t *event);
 void wifi_is_ready();
-void ICACHE_FLASH_ATTR owm_http_callback(char * response_body, int http_status, char * response_headers, int body_size);
+void ICACHE_FLASH_ATTR owm_http_callback(char *response_body, int http_status, char *response_headers, int body_size);
 
 struct Entry myArray = {
     1, 200, {demotable}};
@@ -21,10 +20,7 @@ struct Entry *myArray_p = &myArray;
 
 void ICACHE_FLASH_ATTR user_init()
 {
-  
-  uint32_t tmp = 0xF0E1D2C3;
-  spi_flash_write(FS_BASE_ADDRESS, &tmp, 4);
-
+  fs_init();
   wifi_station_set_config_current(FALSE);
   system_init_done_cb(initDone);
   wifi_set_event_handler_cb(eventHandler);
