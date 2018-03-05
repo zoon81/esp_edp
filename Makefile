@@ -33,7 +33,7 @@ ifeq ($(UNAME_S),Linux)
 	ESPPORT		?= /dev/ttyUSB0
 endif
 ifeq ($(UNAME_S),Darwin)
-	ESPPORT		?= /dev/tty.wchusbserial620
+	ESPPORT		?= /dev/tty.wchusbserial410
 endif
 
 ESPBAUD		?= 115200

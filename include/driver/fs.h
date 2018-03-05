@@ -9,7 +9,7 @@ PAGE 0: LookUp table for the actual block where OBJID [2byte] of files are liste
                             FF -- Free page
 
 Index page struckure: [little endian]
-    0-1     :   OBJID [2byte]
+    0-1     :  OBJID [2byte]
     2-8     :   X
     9-10    :  SIZE of data file [2byte]
     11-12   :   X
@@ -31,18 +31,27 @@ Data page structure:
 #include <mem.h>
 
 #define FS_BASE_ADDRESS 0x63000
-#define MAX_FILENAME_LEN 64
-#define FS_PAGE_SIZE 255
+#define FS_PAGE_SIZE 256
+#define FS_BLOCK_SIZE 4096
+#define FS_META_MAX_FILENAME_LEN 32
+#define FS_META_FILENAME_OFFSET 13
+
+#define FS_DEBUG 1
 
 #define UPPER_16(x) ((x) >> 16)
 #define LOWER_16(x) ((x) & 0x0000FFFF)
 
+#define UPPER_8(x) ((x) >> 24)
+#define UPPER_MID_8(x) ( ((x) & 0x00FF0000) >> 16)
+#define LOWER_MID_8(x) ( ((x) & 0x0000FF00) >> 8)
+#define LOWER_8(x) ((x) & 0xFF)
+
 typedef struct {
-    char filename[MAX_FILENAME_LEN];
+    char filename[FS_META_MAX_FILENAME_LEN];                    //Dynamic length strings may look much better
     uint16_t object_id;
 }fs_index_t;
 
 void fs_init();
-uint8_t fs_load_index_page(uint8_t indexpage_offset, uint16_t *object_ids);
+uint8_t fs_load_index_page(uint8_t indexpage_offset, uint16_t **object_ids);
 
 #endif
