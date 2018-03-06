@@ -30,7 +30,7 @@ ESPTOOL		?= esptool.py
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	ESPPORT		?= /dev/ttyUSB0
+	ESPPORT		?= /dev/ttyUSB1
 endif
 ifeq ($(UNAME_S),Darwin)
 	ESPPORT		?= /dev/tty.wchusbserial410

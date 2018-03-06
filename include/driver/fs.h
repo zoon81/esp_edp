@@ -33,6 +33,7 @@ Data page structure:
 #define FS_BASE_ADDRESS 0x63000
 #define FS_PAGE_SIZE 256
 #define FS_BLOCK_SIZE 4096
+#define FS_WHOLE_SIZE 65536
 #define FS_META_MAX_FILENAME_LEN 32
 #define FS_META_FILENAME_OFFSET 13
 
@@ -49,6 +50,7 @@ Data page structure:
 typedef struct {
     char filename[FS_META_MAX_FILENAME_LEN];                    //Dynamic length strings may look much better
     uint16_t object_id;
+    uint8_t block;
 }fs_index_t;
 
 void fs_init();

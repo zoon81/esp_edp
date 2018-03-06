@@ -20,6 +20,7 @@ struct Entry *myArray_p = &myArray;
 
 void ICACHE_FLASH_ATTR user_init()
 {
+  uart_div_modify(0, UART_CLK_FREQ / 115200);
   fs_init();
   wifi_station_set_config_current(FALSE);
   system_init_done_cb(initDone);
@@ -57,7 +58,7 @@ void initDone()
   strncpy(stationConfig.ssid, "THECORE_2.4", 32);
   strncpy(stationConfig.password, "sp33dlink", 64);
   wifi_station_set_config(&stationConfig);
-  wifi_station_connect();
+  //wifi_station_connect();
 }
 
 void eventHandler(System_Event_t *event)
