@@ -27,7 +27,7 @@ Data page structure:
 #include <os_type.h>
 #include <spi_flash.h>
 #include <osapi.h>
-
+#include <stdlib.h>
 #include <mem.h>
 
 #define FS_BASE_ADDRESS 0x63000
@@ -36,6 +36,10 @@ Data page structure:
 #define FS_WHOLE_SIZE 65536
 #define FS_META_MAX_FILENAME_LEN 32
 #define FS_META_FILENAME_OFFSET 13
+#define FS_META_SIZE_OFFSET 9
+#define FS_META_DATAPAGES_OFFSET
+#define FS_DATA_DATAPERPAGE 251
+#define FS_DATA_DATAOFFSET 5
 
 #define FS_DEBUG 1
 
@@ -50,8 +54,17 @@ Data page structure:
 typedef struct {
     char filename[FS_META_MAX_FILENAME_LEN];                    //Dynamic length strings may look much better
     uint16_t object_id;
-    uint8_t block;
+    uint16_t block;
+    uint16_t page;
 }fs_index_t;
+
+typedef struct{
+    uint16_t objid;
+    uint32_t filepointer;
+    uint32_t size;
+    uint16_t block;
+    uint16_t *pages;
+} fileobject_t;
 
 void fs_init();
 uint8_t fs_load_index_page(uint8_t indexpage_offset, uint16_t **object_ids);

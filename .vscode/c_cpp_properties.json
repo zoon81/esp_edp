@@ -8,6 +8,7 @@
                 "/home/zoon81/ESP8266/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/include/",
                 "/Users/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/driver_lib/include/driver",
                 "/Users/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/include",
+                "/Users/zoon81/ESP8266/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/include/",
                 "${workspaceRoot}/include",
                 "${workspaceRoot}/include/driver",
                 "${workspaceRoot}/include/HAL",
@@ -22,6 +23,7 @@
                     "/home/zoon81/ESP8266/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/include/",
                     "/Users/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/driver_lib/include/driver",
                     "/Users/zoon81/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/include",
+                    "/Users/zoon81/ESP8266/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/include/",
                     "${workspaceRoot}"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
