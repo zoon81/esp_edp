@@ -30,13 +30,15 @@ ESPTOOL		?= esptool.py
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	ESPPORT		?= /dev/ttyUSB1
+	ESPPORT		?= /dev/ttyUSB0
+	ESPBAUD		?= 230400
 endif
 ifeq ($(UNAME_S),Darwin)
 	ESPPORT		?= /dev/tty.wchusbserial410
+	ESPBAUD		?= 115200
 endif
 
-ESPBAUD		?= 115200
+
 
 # name for the target project
 TARGET		= blinky

@@ -22,6 +22,11 @@ void ICACHE_FLASH_ATTR user_init()
 {
   uart_div_modify(0, UART_CLK_FREQ / 115200);
   fs_init();
+  fileobject_t fn1, fn2;
+  fs_openfile("/fs1_1.txt", &fn1);
+  fs_openfile("/fs1_2.txt", &fn2);
+  uint32_t *buff = (uint32_t *) os_malloc(sizeof(uint32_t) * 128);
+  fs_readfile_raw(&fn1, buff, 128);
   wifi_station_set_config_current(FALSE);
   system_init_done_cb(initDone);
   wifi_set_event_handler_cb(eventHandler);

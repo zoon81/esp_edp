@@ -10,11 +10,11 @@ PAGE 0: LookUp table for the actual block where OBJID [2byte] of files are liste
 
 Index page struckure: [little endian]
     0-1     :  OBJID [2byte]
-    2-8     :   X
-    9-10    :  SIZE of data file [2byte]
-    11-12   :   X
+    2-7     :   X
+    8-9    :  SIZE of data file [2byte]
+    10-12   :   X
     13-44   : FILENAME
-    45-     : PAGE Numbers where the content of the file is stored [2byte per page number]
+    44-     : OFFSET where the content of the file is stored [2byte per page number]
 
 Data page structure: 
     0-1 :   OBJID [2byte]
@@ -29,6 +29,7 @@ Data page structure:
 #include <osapi.h>
 #include <stdlib.h>
 #include <mem.h>
+#include "m_string.h"
 
 #define FS_BASE_ADDRESS 0x63000
 #define FS_PAGE_SIZE 256
@@ -36,10 +37,12 @@ Data page structure:
 #define FS_WHOLE_SIZE 65536
 #define FS_META_MAX_FILENAME_LEN 32
 #define FS_META_FILENAME_OFFSET 13
-#define FS_META_SIZE_OFFSET 9
-#define FS_META_DATAPAGES_OFFSET
+#define FS_META_SIZE_OFFSET 8
+#define FS_META_DATAPAGES_OFFSET 44
 #define FS_DATA_DATAPERPAGE 251
 #define FS_DATA_DATAOFFSET 5
+
+#define FS_ERR_FILE_NOT_FOUND_BY_NAME 0
 
 #define FS_DEBUG 1
 
