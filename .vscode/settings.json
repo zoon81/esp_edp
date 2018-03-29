@@ -18,7 +18,16 @@
         "edp.h": "c",
         "spi_flash.h": "c",
         "http.h": "c",
-        "fs.h": "c"
+        "fs.h": "c",
+        "stdbool.h": "c",
+        "cstdbool": "c",
+        "stdint.h": "c",
+        "_ansi.h": "c",
+        "config.h": "c",
+        "limits.h": "c",
+        "newlib.h": "c",
+        "features.h": "c",
+        "ieeefp.h": "c"
     },
     "C_Cpp.intelliSenseEngine": "Default"
 }

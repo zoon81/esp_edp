@@ -155,6 +155,8 @@ flash: $(FW_FILE_1) $(FW_FILE_2)
 fs_flash:
 	$(MKSPIFFS_TOOL) -c $(FS_BASE_DIR) -b $(BLOCK_SIZE) -p $(PAGE_SIZE) $(FS_BINARY)
 	$(ESPTOOL) --port $(ESPPORT) -b $(ESPBAUD) write_flash $(FS_BASE_ADDRESS) $(FS_BINARY)
+fs_read:
+	$(ESPTOOL) --port $(ESPPORT) -b $(ESPBAUD) read_flash $(FS_BASE_ADDRESS) $(FS_BINARY)
 
 clean:
 	$(Q) rm -rf $(FW_BASE) $(BUILD_BASE)

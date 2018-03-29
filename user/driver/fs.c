@@ -1,7 +1,8 @@
 #include "driver/fs.h"
 
-fs_index_t *fs_index = NULL;    // Look-up table for objectid and filename
+fs_index_t *fs_index = NULL;            // Look-up table for objectids and filenames
 uint16_t fs_index_size = 0;
+uint16_t *allocated_offsets = NULL;     // List of offsets where data are writen but the index page not updated
 
 void ICACHE_FLASH_ATTR fs_init()
 {
@@ -9,7 +10,7 @@ void ICACHE_FLASH_ATTR fs_init()
     uint8_t block;
     for (block = 0; block < (FS_WHOLE_SIZE / FS_BLOCK_SIZE); block++)
     {
-        uint8_t numberOfnewID = fs_load_index_page(block, &object_ids);       //Here we store the number of new ObjIDs that we found on the current block index page
+        uint8_t numberOfnewID = _fs_load_index_page(block, &object_ids);       //Here we store the number of new ObjIDs that we found on the current block index page
         uint16_t index;
 #if FS_DEBUG
         for (index = 0; index < numberOfnewID; index++)
@@ -52,6 +53,7 @@ void ICACHE_FLASH_ATTR fs_init()
 #endif
                 fs_index[fs_index_size - 1].block = block;
                 fs_index[fs_index_size - 1].page = index + 1;                               // PAGE0 is allway the index page so we count from 1 not 0
+                fs_index[fs_index_size - 1].flags = (1 << FS_INDEX_FLAGS_FILE_IN_FLASH);
 #if FS_DEBUG
                 os_printf("\nCurernt block: %d", fs_index[fs_index_size - 1].block);
                 os_printf("\nCurernt page: %d", fs_index[fs_index_size - 1].page);
@@ -62,44 +64,12 @@ void ICACHE_FLASH_ATTR fs_init()
     }
 }
 
-uint8_t ICACHE_FLASH_ATTR fs_load_index_page(uint8_t indexpage_offset, uint16_t **object_ids)
-{
-    uint32_t obj_id[FS_PAGE_SIZE / 4];
-    spi_flash_read((FS_BASE_ADDRESS + indexpage_offset * (uint16_t)FS_BLOCK_SIZE), obj_id, (uint16_t)FS_PAGE_SIZE);
-    uint16_t index;
-#if FS_DEBUG
-    for (index = 0; index < FS_PAGE_SIZE / 16; index++)
-    {
-        os_printf("\nOffset %d -> %08x,%08x,%08x,%08x", index*16, obj_id[index * 4 + 0], obj_id[index * 4 + 1], obj_id[index * 4 + 2], obj_id[index * 4 + 3]);
-    }
-#endif
-    uint16_t size = 0;
-    while (obj_id[size] != 0xFFFFFFFF && size < FS_PAGE_SIZE / 4)
-    {
-        size++;
-    }
-    *object_ids = (uint16_t *)os_malloc(sizeof(uint16_t) * size * 2);
-    for (index = 0; index < size ; index++)
-    {
-        *(*object_ids + index * 2) = LOWER_16(obj_id[index]);
-        *(*object_ids + index * 2 + 1) = UPPER_16(obj_id[index]);
-    }
-    size *= 2;
-    index--;
-    #ifdef FS_DEBUG
-    os_printf("\nLastcheck : Lower: %04x, Upper: %04x", LOWER_16(obj_id[index]), UPPER_16(obj_id[index]));
-    #endif
-    if( (LOWER_16(obj_id[index]) != 0xFFFF && UPPER_16(obj_id[index]) == 0xFFFF) | (LOWER_16(obj_id[index]) == 0xFFFF && UPPER_16(obj_id[index]) != 0xFFFF) )
-        size--;
-    return size;
-}
-
-uint16_t ICACHE_FLASH_ATTR fs_openfile(const char *file_name, fileobject_t *fn){
+int8_t ICACHE_FLASH_ATTR fs_openfile(const char *file_name, fileobject_t *fn){
     uint16_t counter = 0;
 
     #ifdef FS_DEBUG
     while(counter < fs_index_size ){
-        os_printf("\nFS_INDEX \tFilename: %s ID: %04x block: %d page: %d", fs_index[counter].filename, fs_index[counter].object_id, fs_index[counter].block, fs_index[counter].page);
+        os_printf("\nFS_INDEX \tFilename: %s ID: %04x block: %d page: %d flags 0x%02x", fs_index[counter].filename, fs_index[counter].object_id, fs_index[counter].block, fs_index[counter].page, fs_index[counter].flags);
         counter++;
     }
     counter = 0;
@@ -177,7 +147,7 @@ uint16_t ICACHE_FLASH_ATTR fs_openfile(const char *file_name, fileobject_t *fn){
         }
     }
     os_free(buffer);
-    return numberofdatapages;
+    return 0;
 
 }
 uint8_t ICACHE_FLASH_ATTR fs_readfile_raw(fileobject_t *fn, uint32_t *buffer, uint16_t size_in_words){
@@ -211,4 +181,42 @@ uint8_t ICACHE_FLASH_ATTR fs_readfile_raw(fileobject_t *fn, uint32_t *buffer, ui
         #endif
     }
 
+}
+
+int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
+    // Are this file allready exist?
+    uint16_t counter = 0;
+    while(counter < fs_index_size){
+        if(!str_cmp(file_name, &fs_index[counter].filename[0])){
+            return FS_ERR_FILE_ALLREADY_EXIST;
+            #ifdef FS_DEBUG
+            os_printf("\n %s allready exist" ,file_name);
+            #endif
+        }
+        counter++;
+    }
+    // Get a free object id for this file
+    uint16_t OBJ_ID = 0x8001;
+    counter = 0;
+    while(counter < fs_index_size){
+        if(fs_index[counter].object_id == OBJ_ID){
+            OBJ_ID++;
+            counter = 0;
+        } else{
+            counter++;
+        }
+    }
+    #ifdef FS_DEBUG
+    os_printf("\nNew OBJID is %04x", OBJ_ID);
+    #endif
+    fn->objid = OBJ_ID;
+    // Check the name of the file
+    uint8_t filename_len = 0;
+    if(strlen(file_name) > FS_META_MAX_FILENAME_LEN){
+        return FS_ERR_FILE_FILENAME_TOO_LONG;
+    } else {
+        uint8_t filename_len = strlen(file_name);
+    }
+
+    
 }
