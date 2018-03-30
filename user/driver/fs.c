@@ -220,3 +220,17 @@ int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
 
     
 }
+int8_t fs_write(fileobject_t *fn, const char *data, uint16_t len){
+    //Memory allocation for file cache
+    if(fn->cache == NULL){
+        fn->cache = malloc(sizeof(fn->cache) * len);
+        fn->cache_len = len;
+    }else{
+        fn->cache = realloc(fn->cache, sizeof(fn->cache) * len);
+        fn->cache_len += len;
+    }
+    strcpy(fn->cache, data);
+    if(fn->cache_len >= FS_BLOCK_SIZE - FS_PAGE_SIZE){          //Every block need an index page
+        //Write data to flash
+    }
+}

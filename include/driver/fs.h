@@ -81,7 +81,7 @@ typedef struct{
     uint32_t size;
     uint16_t block;
     uint16_t *pages;
-    uint8_t *cache;                                         // Data witch is not writen to the flash
+    char *cache;                                            // Data witch is not writen to the flash
     uint16_t cache_len;                                     // Size of the cache
 } fileobject_t;
 
