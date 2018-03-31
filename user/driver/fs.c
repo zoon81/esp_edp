@@ -1,23 +1,21 @@
 #include "driver/fs.h"
+uint16_t *allocated_offsets = NULL;     // List of offsets where data are writen but the index page not updated yet
 
-fs_index_t *fs_index = NULL;            // Look-up table for objectids and filenames
-uint16_t fs_index_size = 0;
-uint16_t *allocated_offsets = NULL;     // List of offsets where data are writen but the index page not updated
-
-void ICACHE_FLASH_ATTR fs_init()
-{
+void ICACHE_FLASH_ATTR fs_init(){
+    fs_index = NULL;
+    fs_index_size = 0;
     uint16_t *object_ids;           // tmp buffer for index page
     uint8_t block;
     for (block = 0; block < (FS_WHOLE_SIZE / FS_BLOCK_SIZE); block++)
     {
         uint8_t numberOfnewID = _fs_load_index_page(block, &object_ids);       //Here we store the number of new ObjIDs that we found on the current block index page
         uint16_t index;
-#if FS_DEBUG
+        #if FS_DEBUG
         for (index = 0; index < numberOfnewID; index++)
         {
             os_printf("\nOBJ ID : %d -> 0x%04x", index, object_ids[index]);
         }
-#endif
+        #endif
         for (index = 0; index < numberOfnewID; index++)
         {
             //get only meta pages
@@ -31,33 +29,33 @@ void ICACHE_FLASH_ATTR fs_init()
                 }
                 uint32_t buffer_objid;
                 spi_flash_read(FS_BASE_ADDRESS + (block * FS_BLOCK_SIZE) + ((uint16_t)FS_PAGE_SIZE * (index + 1)), &buffer_objid, 4);
-#if FS_DEBUG
+                #if FS_DEBUG
                 os_printf("\nOBJ_ID: %x", buffer_objid);
-#endif
+                #endif
                 fs_index[fs_index_size - 1].object_id = (uint16_t)(buffer_objid & 0xFFFF);
                 uint32_t buffer_filename[FS_META_MAX_FILENAME_LEN / 4];
                 spi_flash_read(FS_BASE_ADDRESS + (block * FS_BLOCK_SIZE) + ((uint16_t)FS_PAGE_SIZE * (index + 1)) + FS_META_FILENAME_OFFSET, buffer_filename, FS_META_MAX_FILENAME_LEN);
                 uint8_t i;
                 for (i = 0; i < FS_META_MAX_FILENAME_LEN / 4; i++)
                 {
-#if FS_DEBUG
+                    #if FS_DEBUG
                     os_printf("\nFilename: %x", buffer_filename[i]);
-#endif
+                    #endif
                     fs_index[fs_index_size - 1].filename[i * 4] = LOWER_8(buffer_filename[i]);
                     fs_index[fs_index_size - 1].filename[i * 4 + 1] = LOWER_MID_8(buffer_filename[i]);
                     fs_index[fs_index_size - 1].filename[i * 4 + 2] = UPPER_MID_8(buffer_filename[i]);
                     fs_index[fs_index_size - 1].filename[i * 4 + 3] = UPPER_8(buffer_filename[i]);
                 }
-#if FS_DEBUG
+                #if FS_DEBUG
                 os_printf("\nDecoded Filename: %s", fs_index[fs_index_size - 1].filename);
-#endif
+                #endif
                 fs_index[fs_index_size - 1].block = block;
                 fs_index[fs_index_size - 1].page = index + 1;                               // PAGE0 is allway the index page so we count from 1 not 0
                 fs_index[fs_index_size - 1].flags = (1 << FS_INDEX_FLAGS_FILE_IN_FLASH);
-#if FS_DEBUG
+                #if FS_DEBUG
                 os_printf("\nCurernt block: %d", fs_index[fs_index_size - 1].block);
                 os_printf("\nCurernt page: %d", fs_index[fs_index_size - 1].page);
-#endif
+                #endif
             }
         }
         os_free(object_ids);
@@ -206,10 +204,6 @@ int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
             counter++;
         }
     }
-    #ifdef FS_DEBUG
-    os_printf("\nNew OBJID is %04x", OBJ_ID);
-    #endif
-    fn->objid = OBJ_ID;
     // Check the name of the file
     uint8_t filename_len = 0;
     if(strlen(file_name) > FS_META_MAX_FILENAME_LEN){
@@ -217,10 +211,26 @@ int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
     } else {
         uint8_t filename_len = strlen(file_name);
     }
+    // Update fs_index and filehandler
+    fs_index_size++;
+    fs_index = (fs_index_t *)os_realloc(fs_index, sizeof(fs_index_t) * fs_index_size);
+    strcpy(fs_index[fs_index_size - 1].filename, file_name );
+    fs_index[fs_index_size - 1].object_id   = OBJ_ID;
+    fs_index[fs_index_size - 1].block       = 0;
+    fs_index[fs_index_size - 1].page        = 0;
+    fs_index[fs_index_size - 1].flags = (0 << FS_INDEX_FLAGS_FILE_IN_FLASH);
+    fn->objid       = OBJ_ID;
+    fn->block       = 0;
+    fn->cache_len   = 0;
+    fn->filepointer = 0;
+    fn->size        = 0;
+    #ifdef FS_DEBUG
+    os_printf("\nNew OBJID is %04x", fs_index[fs_index_size - 1].object_id);
+    #endif    
 
     
 }
-int8_t fs_write(fileobject_t *fn, const char *data, uint16_t len){
+int8_t ICACHE_FLASH_ATTR fs_write(fileobject_t *fn, const char *data, uint16_t len){
     //Memory allocation for file cache
     if(fn->cache == NULL){
         fn->cache = malloc(sizeof(fn->cache) * len);
@@ -233,4 +243,5 @@ int8_t fs_write(fileobject_t *fn, const char *data, uint16_t len){
     if(fn->cache_len >= FS_BLOCK_SIZE - FS_PAGE_SIZE){          //Every block need an index page
         //Write data to flash
     }
+    
 }

@@ -85,6 +85,9 @@ typedef struct{
     uint16_t cache_len;                                     // Size of the cache
 } fileobject_t;
 
+extern fs_index_t *fs_index;            // Look-up table for objectids and filenames
+extern uint16_t fs_index_size;
+
 void fs_init();
 uint8_t ICACHE_FLASH_ATTR _fs_load_index_page(uint8_t indexpage_offset, uint16_t **object_ids);
 uint8_t _fs_getfreepages(uint16_t *buffer, uint8_t numberOfFreePages);
