@@ -69,3 +69,21 @@ void _fs_dump_fsindex(){
         counter++;
     }
 }
+void _fs_dump_fileobject(fileobject_t *fn){
+    osprintf("OBJID: %04x\tfilepointer: %d\tSize: %d\tBlock: %d", fn->objid, fn->filepointer, fn->size, fn->block);
+    // Calculate how many data page we have based on its size and print it out
+    uint16_t numberofdatapages;
+    if(fn->size % FS_DATA_DATAPERPAGE){
+        numberofdatapages = fn->size / FS_DATA_DATAPERPAGE +1;
+    } else{
+        numberofdatapages = fn->size / FS_DATA_DATAPERPAGE;
+    }
+    os_printf("Datapage_index:\n");
+    uint16_t counter;
+    for(counter = 0; counter < numberofdatapages; counter++){
+        if(counter % 6)
+            os_printf("%04x, ", fn->pages[counter]);
+        else
+            os_printf("\n%04x, ", fn->pages[counter]);
+    }
+}
