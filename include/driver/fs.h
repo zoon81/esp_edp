@@ -34,6 +34,7 @@ Data page structure:
 #include "m_string.h"
 
 #define FS_BASE_ADDRESS 0x63000
+#define FS_BASE_SECTOR 99
 #define FS_PAGE_SIZE 256
 #define FS_BLOCK_SIZE 4096
 #define FS_WHOLE_SIZE 65536
