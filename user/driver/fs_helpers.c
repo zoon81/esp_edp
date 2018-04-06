@@ -28,7 +28,7 @@ uint8_t ICACHE_FLASH_ATTR _fs_load_index_page(uint8_t indexpage_offset, uint16_t
     return size;
 }
 
-uint8_t _fs_getfreepages(uint16_t *buffer, uint8_t numberOfFreePages){
+uint8_t ICACHE_FLASH_ATTR _fs_getfreepages(uint16_t *buffer, uint8_t numberOfFreePages){
     uint16_t freePageOffset = 0;
     uint8_t current_block = 0;
     uint8_t freepage_counter = 0;
@@ -61,7 +61,7 @@ uint8_t _fs_getfreepages(uint16_t *buffer, uint8_t numberOfFreePages){
     }
     #endif
 }
-void _fs_dump_fsindex(){
+void ICACHE_FLASH_ATTR _fs_dump_fsindex(){
     uint16_t counter = 0;
     os_printf("FS_INDEX_DUMP");
     while(counter < fs_index_size ){
@@ -69,8 +69,8 @@ void _fs_dump_fsindex(){
         counter++;
     }
 }
-void _fs_dump_fileobject(fileobject_t *fn){
-    osprintf("OBJID: %04x\tfilepointer: %d\tSize: %d\tBlock: %d", fn->objid, fn->filepointer, fn->size, fn->block);
+void ICACHE_FLASH_ATTR _fs_dump_fileobject(fileobject_t *fn){
+    os_printf("OBJID: %04x\tfilepointer: %d\tSize: %d\tBlock: %d", fn->objid, fn->filepointer, fn->size, fn->block);
     // Calculate how many data page we have based on its size and print it out
     uint16_t numberofdatapages;
     if(fn->size % FS_DATA_DATAPERPAGE){
@@ -86,4 +86,51 @@ void _fs_dump_fileobject(fileobject_t *fn){
         else
             os_printf("\n%04x, ", fn->pages[counter]);
     }
+}
+uint8_t ICACHE_FLASH_ATTR _fs_getfreeblock(){
+    uint8_t current_block = 0;
+    while(current_block < FS_WHOLE_SIZE / FS_BLOCK_SIZE){
+        uint32_t buffer[FS_BLOCK_SIZE / 4];
+        spi_flash_read(FS_BASE_ADDRESS + current_block * FS_BLOCK_SIZE, buffer, FS_BLOCK_SIZE);
+        uint8_t counter = 0;
+        while(counter < FS_BLOCK_SIZE / 4 - 1){             //the last word in the index page has different meaning
+            if(buffer[counter] == 0x00000000 | buffer[counter] == 0xFFFFFFFF){
+                counter++;
+            } else {
+                counter = 0xFF;                             // This means this is a used block
+            }
+        }
+        if(counter == (FS_BLOCK_SIZE / 4 - 1 - 1)){
+            return current_block;
+        } else if( (current_block == FS_WHOLE_SIZE / FS_BLOCK_SIZE -1) && counter == 0xFF) {
+             return current_block = 0xff;                           // No more free block on the filesystem
+            } else {
+                current_block++;
+            }   
+    }
+}
+uint8_t ICACHE_FLASH_ATTR _fs_writeblock(fileobject_t *fn, uint8_t block){
+    spi_flash_erase_sector(FS_BASE_SECTOR + block);
+    
+    uint32_t indexpage[FS_PAGE_SIZE / 4] = {0xFF};
+    uint8_t pages_len = 1;
+    if(fn->cache_len % FS_PAGE_SIZE){
+        pages_len += fn->cache_len / FS_PAGE_SIZE + 1;
+    } else {
+        pages_len += fn->cache_len / FS_PAGE_SIZE;
+    }
+    uint8_t i;
+    if(pages_len % 2){
+        for(i = 0; i < pages_len -1 ; i++){
+            indexpage[i] = ( fn->objid << 16 | fn->objid);
+        }
+        indexpage[i] = fn->objid;
+    } else {
+        for(i = 0; i < pages_len -1 ; i++){
+            indexpage[i] = ( fn->objid << 16 | fn->objid);
+        }
+    }
+
+
+
 }

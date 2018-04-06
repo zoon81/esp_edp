@@ -89,8 +89,11 @@ typedef struct{
 extern fs_index_t *fs_index;            // Look-up table for objectids and filenames
 extern uint16_t fs_index_size;
 
-void fs_init();
-uint8_t ICACHE_FLASH_ATTR _fs_load_index_page(uint8_t indexpage_offset, uint16_t **object_ids);
-uint8_t _fs_getfreepages(uint16_t *buffer, uint8_t numberOfFreePages);
+void ICACHE_FLASH_ATTR fs_init();
+uint8_t ICACHE_FLASH_ATTR _fs_getfreepages(uint16_t *buffer, uint8_t numberOfFreePages);
+void ICACHE_FLASH_ATTR _fs_dump_fsindex();
+void ICACHE_FLASH_ATTR _fs_dump_fileobject(fileobject_t *fn);
+uint8_t ICACHE_FLASH_ATTR _fs_getfreeblock();
+uint8_t ICACHE_FLASH_ATTR _fs_writeblock(fileobject_t *fn, uint8_t block);
 
 #endif

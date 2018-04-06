@@ -1,4 +1,6 @@
 #include "driver/fs.h"
+fs_index_t *fs_index;            // Look-up table for objectids and filenames
+uint16_t fs_index_size;
 uint16_t *allocated_offsets = NULL;     // List of offsets where data are writen but the index page not updated yet
 
 void ICACHE_FLASH_ATTR fs_init(){
@@ -148,6 +150,7 @@ int8_t ICACHE_FLASH_ATTR fs_openfile(const char *file_name, fileobject_t *fn){
     return 0;
 
 }
+
 uint8_t ICACHE_FLASH_ATTR fs_readfile_raw(fileobject_t *fn, uint32_t *buffer, uint16_t size_in_words){
     if( size_in_words * 4  > fn->size){                                                                     // if we requesting too much data we get what we have
         size_in_words = fn->size / 4 * 4;
@@ -218,7 +221,7 @@ int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
     fs_index[fs_index_size - 1].object_id   = OBJ_ID;
     fs_index[fs_index_size - 1].block       = 0;
     fs_index[fs_index_size - 1].page        = 0;
-    fs_index[fs_index_size - 1].flags = (0 << FS_INDEX_FLAGS_FILE_IN_FLASH);
+    fs_index[fs_index_size - 1].flags       = (0 << FS_INDEX_FLAGS_FILE_IN_FLASH);
     fn->objid       = OBJ_ID;
     fn->block       = 0;
     fn->cache_len   = 0;
@@ -230,13 +233,15 @@ int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
 
     
 }
+
+
 int8_t ICACHE_FLASH_ATTR fs_write(fileobject_t *fn, const char *data, uint16_t len){
     //Memory allocation for file cache
     if(fn->cache == NULL){
-        fn->cache = malloc(sizeof(fn->cache) * len);
+        fn->cache = (char *)os_malloc(sizeof(fn->cache) * len);
         fn->cache_len = len;
     }else{
-        fn->cache = realloc(fn->cache, sizeof(fn->cache) * len);
+        fn->cache = (char *)os_realloc(fn->cache, sizeof(fn->cache) * len);
         fn->cache_len += len;
     }
     strcpy(fn->cache, data);
