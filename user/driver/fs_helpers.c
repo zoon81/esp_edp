@@ -93,7 +93,7 @@ uint8_t ICACHE_FLASH_ATTR _fs_getfreeblock(){
         uint32_t buffer[FS_BLOCK_SIZE / 4];
         spi_flash_read(FS_BASE_ADDRESS + current_block * FS_BLOCK_SIZE, buffer, FS_BLOCK_SIZE);
         uint8_t counter = 0;
-        while(counter < FS_BLOCK_SIZE / 4 - 1){             //the last word in the index page has different meaning
+        while(counter < FS_BLOCK_SIZE / 4 - 1){             //the last dword in the index page has different meaning
             if(buffer[counter] == 0x00000000 | buffer[counter] == 0xFFFFFFFF){
                 counter++;
             } else {
@@ -112,7 +112,7 @@ uint8_t ICACHE_FLASH_ATTR _fs_getfreeblock(){
 uint8_t ICACHE_FLASH_ATTR _fs_writeblock(fileobject_t *fn, uint8_t block){
     spi_flash_erase_sector(FS_BASE_SECTOR + block);
     
-    uint32_t indexpage[FS_PAGE_SIZE / 4] = {0xFF};
+    uint32_t indexpage[FS_PAGE_SIZE / 4] = {0xFFFFFFFF};
     uint8_t pages_len = 1;
     if(fn->cache_len % FS_PAGE_SIZE){
         pages_len += fn->cache_len / FS_PAGE_SIZE + 1;
@@ -130,6 +130,17 @@ uint8_t ICACHE_FLASH_ATTR _fs_writeblock(fileobject_t *fn, uint8_t block){
             indexpage[i] = ( fn->objid << 16 | fn->objid);
         }
     }
+    indexpage[FS_PAGE_SIZE / 4 - 1 ] = 0x04390000; //Magic value
+    #ifdef FS_DEBUG
+    os_printf("INDEX PAGE\n");
+    for(i = 0; i < FS_PAGE_SIZE / 4; i++){
+        if(i % 4)
+            os_printf("\n\r\t0x%04x",indexpage[i]);
+        else
+            os_printf("\t0x%04x",indexpage[i]);
+    }
+    #endif
+    spi_flash_write(FS_BASE_ADDRESS + FS_PAGE_SIZE * block, indexpage, FS_PAGE_SIZE);
 
 
 

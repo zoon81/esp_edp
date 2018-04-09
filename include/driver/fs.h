@@ -90,6 +90,7 @@ extern fs_index_t *fs_index;            // Look-up table for objectids and filen
 extern uint16_t fs_index_size;
 
 void ICACHE_FLASH_ATTR fs_init();
+int8_t ICACHE_FLASH_ATTR fs_write(fileobject_t *fn, const char *data, uint16_t len);
 uint8_t ICACHE_FLASH_ATTR _fs_getfreepages(uint16_t *buffer, uint8_t numberOfFreePages);
 void ICACHE_FLASH_ATTR _fs_dump_fsindex();
 void ICACHE_FLASH_ATTR _fs_dump_fileobject(fileobject_t *fn);

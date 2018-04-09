@@ -22,9 +22,6 @@ HOME_FOLDER = $(HOME)
 #XTENSA_TOOLS_ROOT ?= /home/t400/ESP8266/esp-open-sdk/xtensa-lx106-elf/bin/
 XTENSA_TOOLS_ROOT ?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/xtensa-lx106-elf/bin/
 
-# base directory of the ESP8266 SDK package, absolute
-SDK_BASE	?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10/
-
 # esptool.py path and port
 ESPTOOL		?= esptool.py
 
@@ -32,10 +29,14 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	ESPPORT		?= /dev/ttyUSB0
 	ESPBAUD		?= 230400
+	# base directory of the ESP8266 SDK package, absolute
+	SDK_BASE	?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10	
 endif
 ifeq ($(UNAME_S),Darwin)
 	ESPPORT		?= /dev/tty.wchusbserial410
 	ESPBAUD		?= 115200
+	# base directory of the ESP8266 SDK package, absolute
+	SDK_BASE	?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK/
 endif
 
 
@@ -54,7 +55,7 @@ LIBS		= c gcc hal pp phy net80211 lwip wpa main ssl json
 CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
+LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,output.map
 
 # linker script used for the above linkier step
 LD_SCRIPT	= eagle.app.v6.ld
@@ -100,6 +101,7 @@ APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
 
 LD_SCRIPT	:= $(addprefix -T$(SDK_BASE)/$(SDK_LDDIR)/,$(LD_SCRIPT))
+#LD_SCRIPT := $(addprefix -Texternal_tools/,$(LD_SCRIPT))
 
 INCDIR	:= $(addprefix -I,$(SRC_DIR))
 EXTRA_INCDIR	:= $(addprefix -I,$(EXTRA_INCDIR))
@@ -107,6 +109,7 @@ MODULE_INCDIR	:= $(addsuffix /include,$(INCDIR))
 
 FW_FILE_1	:= $(addprefix $(FW_BASE)/,$(FW_FILE_1_ADDR).bin)
 FW_FILE_2	:= $(addprefix $(FW_BASE)/,$(FW_FILE_2_ADDR).bin)
+VERBOSE := 0
 
 V ?= $(VERBOSE)
 ifeq ("$(V)","1")
