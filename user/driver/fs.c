@@ -53,7 +53,7 @@ void ICACHE_FLASH_ATTR fs_init(){
                 #endif
                 fs_index[fs_index_size - 1].block = block;
                 fs_index[fs_index_size - 1].page = index + 1;                               // PAGE0 is allway the index page so we count from 1 not 0
-                fs_index[fs_index_size - 1].flags = (1 << FS_INDEX_FLAGS_FILE_IN_FLASH);
+                fs_index[fs_index_size - 1].flags = (1 << FSINDEX_FLAGS_FILE_IN_FLASH);
                 #if FS_DEBUG
                 os_printf("\nCurernt block: %d", fs_index[fs_index_size - 1].block);
                 os_printf("\nCurernt page: %d", fs_index[fs_index_size - 1].page);
@@ -221,9 +221,10 @@ int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
     fs_index[fs_index_size - 1].object_id   = OBJ_ID;
     fs_index[fs_index_size - 1].block       = 0;
     fs_index[fs_index_size - 1].page        = 0;
-    fs_index[fs_index_size - 1].flags       = (0 << FS_INDEX_FLAGS_FILE_IN_FLASH);
+    fs_index[fs_index_size - 1].flags       = (0 << FSINDEX_FLAGS_FILE_IN_FLASH);
     fn->objid       = OBJ_ID;
     fn->block       = 0;
+    fn->cache       = NULL;
     fn->cache_len   = 0;
     fn->filepointer = 0;
     fn->size        = 0;
@@ -234,15 +235,27 @@ int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
     
 }
 
-
+//this is writing the cache first
 int8_t ICACHE_FLASH_ATTR fs_write(fileobject_t *fn, const char *data, uint16_t len){
     //Memory allocation for file cache
     if(fn->cache == NULL){
+        #ifdef FS_DEBUG
+        os_printf("\n\rAllocating memory for cache");
+        #endif
         fn->cache = (char *)os_malloc(sizeof(fn->cache) * len);
         fn->cache_len = len;
+        #ifdef FS_DEBUG
+        os_printf("\n\rCache address is: 0x%x", fn->cache);
+        #endif
     }else{
+        #ifdef FS_DEBUG
+        os_printf("\n\rReallocating memory for cache");
+        #endif
         fn->cache = (char *)os_realloc(fn->cache, sizeof(fn->cache) * len);
         fn->cache_len += len;
+        #ifdef FS_DEBUG
+        os_printf("\n\rCache size : %d", fn->cache_len);
+        #endif
     }
     strcpy(fn->cache, data);
     if(fn->cache_len >= FS_BLOCK_SIZE - FS_PAGE_SIZE){          //Every block need an index page

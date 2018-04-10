@@ -28,6 +28,7 @@ void ICACHE_FLASH_ATTR user_init()
   fs_write(&fn1, "testdata", 9);
   _fs_dump_fileobject(&fn1);
   uint8_t openblc = _fs_getfreeblock();
+  os_printf("\n\rFree block: %d", openblc);
   _fs_writeblock(&fn1, openblc);
   //fs_openfile("/fs1_1.txt", &fn1);
   //fs_openfile("/fs1_2.txt", &fn2);

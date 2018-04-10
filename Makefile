@@ -27,10 +27,10 @@ ESPTOOL		?= esptool.py
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	ESPPORT		?= /dev/ttyUSB0
+	ESPPORT		?= /dev/ttyUSB1
 	ESPBAUD		?= 230400
 	# base directory of the ESP8266 SDK package, absolute
-	SDK_BASE	?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10	
+	SDK_BASE	?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10
 endif
 ifeq ($(UNAME_S),Darwin)
 	ESPPORT		?= /dev/tty.wchusbserial410
@@ -55,7 +55,7 @@ LIBS		= c gcc hal pp phy net80211 lwip wpa main ssl json
 CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,-Map,output.map
+LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
 
 # linker script used for the above linkier step
 LD_SCRIPT	= eagle.app.v6.ld
@@ -78,6 +78,7 @@ LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 #General FileSystem stuff
 FS_BASE_DIR = external_tools/spiffs_image
 MKSPIFFS_TOOL = mkspiffs
+WHOLE_SIZE = 65536
 BLOCK_SIZE = 4096
 PAGE_SIZE = 256
 FS_BINARY = external_tools/spiffs_image.bin
@@ -159,7 +160,7 @@ fs_flash:
 	$(MKSPIFFS_TOOL) -c $(FS_BASE_DIR) -b $(BLOCK_SIZE) -p $(PAGE_SIZE) $(FS_BINARY)
 	$(ESPTOOL) --port $(ESPPORT) -b $(ESPBAUD) write_flash $(FS_BASE_ADDRESS) $(FS_BINARY)
 fs_read:
-	$(ESPTOOL) --port $(ESPPORT) -b $(ESPBAUD) read_flash $(FS_BASE_ADDRESS) $(FS_BINARY)
+	$(ESPTOOL) --port $(ESPPORT) -b $(ESPBAUD) read_flash $(FS_BASE_ADDRESS) $(WHOLE_SIZE) $(FS_BINARY)
 
 clean:
 	$(Q) rm -rf $(FW_BASE) $(BUILD_BASE)

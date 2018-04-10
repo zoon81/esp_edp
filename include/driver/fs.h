@@ -43,6 +43,7 @@ Data page structure:
 #define FS_META_FILENAME_OFFSET 13
 #define FS_META_SIZE_OFFSET 8
 #define FS_META_DATAPAGES_OFFSET 44
+
 // This is an "active low" flags
 #define FS_FLAG_USED 1
 #define FS_FLAG_FILNALIZED 2
@@ -51,12 +52,13 @@ Data page structure:
 
 #define FS_DATA_DATAPERPAGE 251
 #define FS_DATA_DATAOFFSET 5
+#define FS_INDEX_INDEXPERPAGE 252
 
 #define FS_ERR_FILE_NOT_FOUND_BY_NAME -1
 #define FS_ERR_FILE_ALLREADY_EXIST -2
 #define FS_ERR_FILE_FILENAME_TOO_LONG -3
 
-#define FS_INDEX_FLAGS_FILE_IN_FLASH 0
+#define FSINDEX_FLAGS_FILE_IN_FLASH 0
 
 #define FS_DEBUG 1
 
