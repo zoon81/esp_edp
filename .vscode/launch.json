@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "logging": { "engineLogging": true },
+        "name": "C++ Launch",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceRoot}/build/blinky.out",
+        "launchCompleteCommand":"None",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceRoot}",
+        "environment": [],
+        "externalConsole": true,
+        "linux": {
+          "MIMode": "gdb",
+          "miDebuggerPath": "xtensa-lx106-elf-gdb",
+          "setupCommands": [
+            { "text": "set serial baud 115200" },
+            { "text": "set remote hardware-breakpoint-limit 1" },
+            { "text": "set remote hardware-watchpoint-limit 1" },
+            { "text": "set debug xtensa 4" },
+            { "text": "target remote /dev/ttyUSB2" }
+            ]
+        },
+        "osx": {
+          "MIMode": "gdb"
+        },
+        "windows": {
+          "MIMode": "gdb"
+        }
+      }
+    ]
+  }

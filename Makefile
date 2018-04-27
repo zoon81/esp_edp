@@ -52,7 +52,7 @@ EXTRA_INCDIR    = include
 LIBS		= c gcc hal pp phy net80211 lwip wpa main ssl json
 
 # compiler flags using during compilation of source files
-CFLAGS		= -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
+CFLAGS		= -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals  -D__ets__ -DICACHE_FLASH
 
 # linker flags used to generate the main object file
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
@@ -72,6 +72,7 @@ FW_FILE_2_ADDR	= 0x10000
 
 # select which tools to use as compiler, librarian and linker
 CC		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
+AS 		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-as
 AR		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-ar
 LD		:= $(XTENSA_TOOLS_ROOT)/xtensa-lx106-elf-gcc
 
@@ -86,6 +87,17 @@ FS_BINARY = external_tools/spiffs_image.bin
 # ESP FileSystem stuff
 FS_BASE_ADDRESS = 0x63000
 
+ENABLE_GDB := 0
+
+#DEBUGING
+ifeq ($(ENABLE_GDB), 1)
+	CFLAGS += -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1
+	MODULES		 += esp-gdbstub
+	EXTRA_INCDIR += esp-gdbstub
+else
+	CFLAGS += -Os -g
+endif
+
 ####
 #### no user configurable options below here
 ####
@@ -95,8 +107,11 @@ BUILD_DIR	:= $(addprefix $(BUILD_BASE)/,$(MODULES))
 SDK_LIBDIR	:= $(addprefix $(SDK_BASE)/,$(SDK_LIBDIR))
 SDK_INCDIR	:= $(addprefix -I$(SDK_BASE)/,$(SDK_INCDIR))
 
-SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
-OBJ		:= $(patsubst %.c,$(BUILD_BASE)/%.o,$(SRC))
+AS_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.S)) 
+C_SRC		:= $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.c))
+AS_OBJ		:= $(patsubst %.S,%.o,$(AS_SRC))
+C_OBJ		:= $(patsubst %.c,%.o,$(C_SRC))
+OBJ			:= $(patsubst %.o,$(BUILD_BASE)/%.o,$(AS_OBJ) $(C_OBJ))
 LIBS		:= $(addprefix -l,$(LIBS))
 APP_AR		:= $(addprefix $(BUILD_BASE)/,$(TARGET)_app.a)
 TARGET_OUT	:= $(addprefix $(BUILD_BASE)/,$(TARGET).out)
@@ -121,9 +136,14 @@ Q := @
 vecho := @echo
 endif
 
+vpath %.S $(SRC_DIR)
 vpath %.c $(SRC_DIR)
 
 define compile-objects
+$1/%.o: %.S
+	$(vecho) "ASM $$<"
+	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -D__ASSEMBLER__ -c $$< -o $$@
+
 $1/%.o: %.c
 	$(vecho) "CC $$<"
 	$(Q) $(CC) $(INCDIR) $(MODULE_INCDIR) $(EXTRA_INCDIR) $(SDK_INCDIR) $(CFLAGS) -c $$< -o $$@

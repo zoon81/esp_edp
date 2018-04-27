@@ -7,6 +7,9 @@
 #include "user_interface.h"
 #include <gpio.h>
 #include <os_type.h>
+#ifdef ENABLE_GDB
+	#include "gdbstub.h"
+#endif
 
 #include "HAL/spi.h"
 #include "driver/edp.h"
@@ -17,6 +20,6 @@
 #include "http.h"
 
 void some_timerfunc(void *arg);
-void ICACHE_FLASH_ATTR user_init();
+void user_init();
 
 #endif

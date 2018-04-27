@@ -228,6 +228,8 @@ int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
     fn->cache_len   = 0;
     fn->filepointer = 0;
     fn->size        = 0;
+    fn->pages       = NULL;
+    fn->pages_len   = 0;
     #ifdef FS_DEBUG
     os_printf("\nNew OBJID is %04x", fs_index[fs_index_size - 1].object_id);
     #endif    
@@ -235,7 +237,7 @@ int8_t ICACHE_FLASH_ATTR fs_createNewFile(fileobject_t *fn, char *file_name){
     
 }
 
-//this is writing the cache first
+//this is writing to the cache first
 int8_t ICACHE_FLASH_ATTR fs_write(fileobject_t *fn, const char *data, uint16_t len){
     //Memory allocation for file cache
     if(fn->cache == NULL){
@@ -245,21 +247,58 @@ int8_t ICACHE_FLASH_ATTR fs_write(fileobject_t *fn, const char *data, uint16_t l
         fn->cache = (char *)os_malloc(sizeof(fn->cache) * len);
         fn->cache_len = len;
         #ifdef FS_DEBUG
-        os_printf("\n\rCache address is: 0x%x", fn->cache);
+        os_printf("\n\rCache address is: 0x%x, cache size %d", fn->cache, fn->cache_len);
         #endif
     }else{
         #ifdef FS_DEBUG
         os_printf("\n\rReallocating memory for cache");
         #endif
-        fn->cache = (char *)os_realloc(fn->cache, sizeof(fn->cache) * len);
+        fn->cache = (char *)os_realloc(fn->cache, fn->cache_len + sizeof(fn->cache) * len);
         fn->cache_len += len;
         #ifdef FS_DEBUG
-        os_printf("\n\rCache size : %d", fn->cache_len);
+        os_printf("\n\rCache address is: 0x%x, cache size %d", fn->cache, fn->cache_len);
         #endif
     }
-    strcpy(fn->cache, data);
+    memcpy(fn->cache, data, len);
     if(fn->cache_len >= FS_BLOCK_SIZE - FS_PAGE_SIZE){          //Every block need an index page
-        //Write data to flash
+        uint8_t freeblock = _fs_getfreeblock();
+        //_fs_writeblock(fn, freeblock);
     }
     
+}
+uint8_t ICACHE_FLASH_ATTR fs_flush(fileobject_t *fn){
+    char header[FS_DATA_HEADER_LEN];
+    header[0] = fn->objid & 0xFF;
+    header[1] = fn->objid >> 8;
+    header[2] = 0;
+    header[3] = 0;
+    header[4] = 0xFC;
+    uint16_t freepage[1];
+    _fs_getfreepages(freepage, 1);
+    _fs_writePage(0, header, FS_DATA_HEADER_LEN, fn->cache, fn->cache_len, 0);
+    //Updating pages[] table
+    if(fn->pages == NULL){
+        #ifdef FS_DEBUG
+        os_printf("\n\rAllocating memory for pages");
+        #endif
+        fn->pages = (uint16_t *)os_malloc(sizeof(fn->pages));
+        fn->pages_len++;
+        #ifdef FS_DEBUG
+        os_printf("\n\rPages address is: 0x%x, pages size: %d", fn->pages, fn->pages_len);
+        #endif
+    }else{
+        #ifdef FS_DEBUG
+        os_printf("\n\rReallocating memory for pages");
+        #endif
+        fn->pages_len++;
+        fn->pages = (uint16_t *)os_realloc(fn->pages, fn->pages_len * sizeof(fn->pages));
+        #ifdef FS_DEBUG
+        os_printf("\n\rPages address is: 0x%x, pages size: %d", fn->pages, fn->pages_len);
+        #endif
+    }
+    fn->pages[fn->pages_len - 1] = freepage[0];
+    fn->size += fn->cache_len;
+    os_free(fn->cache);
+    fn->cache = NULL;
+    fn->cache_len = 0;
 }

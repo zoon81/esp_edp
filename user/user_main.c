@@ -18,18 +18,51 @@ struct Entry myArray = {
 
 struct Entry *myArray_p = &myArray;
 
-void ICACHE_FLASH_ATTR user_init()
+void  user_init()
 {
   uart_div_modify(0, UART_CLK_FREQ / 115200);
+  #ifdef ENABLE_GDB
+	  gdbstub_init();
+  #endif 
   fs_init();
-
   fileobject_t fn1, fn2;
   fs_createNewFile(&fn1, "testfile.txt");
-  fs_write(&fn1, "testdata", 9);
-  _fs_dump_fileobject(&fn1);
-  uint8_t openblc = _fs_getfreeblock();
-  os_printf("\n\rFree block: %d", openblc);
-  _fs_writeblock(&fn1, openblc);
+  //test with large data
+  char *p = (char *)os_malloc(sizeof(char) * 120);
+  os_printf("\n\rTMP buffer address : 0x%x \n\rTMP Buffer:\n\r", p);
+  uint16_t i;
+  for(i = 0; i < 120; i++){
+    p[i] = (char) (i % 4);
+  }
+
+  for(i =0; i < 128; i++){
+    if(i % 16)
+      os_printf("%x ",p[i]);
+    else
+      os_printf("\n\r%x ",p[i]);
+  }
+  os_printf("\n\rTMP buffer allocation DONE address : 0x%x", p);
+  //fs_write(&fn1, &p[0], 512);
+  //_fs_dump_fileobject(&fn1);
+  //uint8_t openblc = _fs_getfreeblock();
+  //os_printf("\n\rFree block: %d", openblc);
+  //_fs_writeblock(&fn1, openblc);
+  //tets with small data
+  fs_createNewFile(&fn2, "testfile2.txt");
+  fs_write(&fn2, "12345", 6);
+  fs_flush(&fn2);
+  _fs_dump_fileobject(&fn2);
+  fs_write(&fn2, "6789", 5);
+  fs_flush(&fn2);
+  _fs_dump_fileobject(&fn2);
+  //openblc = _fs_getfreeblock();
+  //os_printf("\n\rFree block: %d", openblc);
+  //_fs_writeblock(&fn2, openblc);
+  uint32_t tmp[64];
+  _fs_buildMetaPage(&fn2, tmp);
+  //_fs_writePage(0, "12345678", 9, "123456789", 10, 0xFF00FF00 );
+
+
   //fs_openfile("/fs1_1.txt", &fn1);
   //fs_openfile("/fs1_2.txt", &fn2);
 

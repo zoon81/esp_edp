@@ -8,7 +8,7 @@ PAGE 0: LookUp table for the actual block where OBJID [2byte] of files are liste
         SPECICAL OBJ ID:    00 -- Deleted page
                             FF -- Free page
 
-Index page struckure: [little endian]
+Meta page struckure: [little endian]
     0-1     :  OBJID [2byte]
     2-3     :  SNAP IX [2byte]
     4       :  FLAGS
@@ -52,6 +52,7 @@ Data page structure:
 
 #define FS_DATA_DATAPERPAGE 251
 #define FS_DATA_DATAOFFSET 5
+#define FS_DATA_HEADER_LEN 5
 #define FS_INDEX_INDEXPERPAGE 252
 
 #define FS_ERR_FILE_NOT_FOUND_BY_NAME -1
@@ -73,8 +74,8 @@ Data page structure:
 typedef struct {
     char filename[FS_META_MAX_FILENAME_LEN];              //Dynamic length strings may look much better
     uint16_t object_id;
-    uint16_t block;
-    uint16_t page;
+    uint16_t block;                                       // Block where the metapage are writen
+    uint16_t page;                                        // Page where the metapage are writen
     uint8_t flags;                                        // bits: [0] -> File are in flash. This is usefull when a new file created and it is not writen to the flash yet.
 }fs_index_t;
 
@@ -82,8 +83,9 @@ typedef struct{
     uint16_t objid;
     uint32_t filepointer;
     uint32_t size;
-    uint16_t block;
+    uint16_t block;                                         
     uint16_t *pages;
+    uint8_t pages_len;
     char *cache;                                            // Data witch is not writen to the flash
     uint16_t cache_len;                                     // Size of the cache
 } fileobject_t;
@@ -98,5 +100,8 @@ void ICACHE_FLASH_ATTR _fs_dump_fsindex();
 void ICACHE_FLASH_ATTR _fs_dump_fileobject(fileobject_t *fn);
 uint8_t ICACHE_FLASH_ATTR _fs_getfreeblock();
 uint8_t ICACHE_FLASH_ATTR _fs_writeblock(fileobject_t *fn, uint8_t block);
+uint8_t ICACHE_FLASH_ATTR _fs_writePage(uint16_t abs_page_addr, char *header, uint8_t header_len, char *body, uint8_t body_len, uint32_t footer);
+uint8_t ICACHE_FLASH_ATTR _fs_buildMetaPage(fileobject_t *fn, uint32_t *buffer);
+uint16_t _fsindex_getIndexbyID(uint16_t objid);
 
 #endif
