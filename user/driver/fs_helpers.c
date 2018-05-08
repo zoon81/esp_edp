@@ -43,7 +43,18 @@ uint8_t ICACHE_FLASH_ATTR _fs_getfreepages(uint16_t *body, uint8_t numberOfFreeP
                 #endif
                 if (object_ids[cache_index] == 0x0000 | object_ids[cache_index] == 0xFFFF){
                     freePageOffset = current_block * FS_BLOCK_SIZE + (cache_index + 1) * FS_PAGE_SIZE;
-                    cache_index = numberOfIDs;
+                    //check if a page that we get are preallocated or not
+                    uint8_t counter = 0;
+                    while( freePageOffset && counter < blk_cache.modified_pages_size){
+                        os_printf("\n\rALLOCPAGE: 0x%x", blk_cache.modified_pages[counter]);
+                        if(blk_cache.modified_pages[counter++] == freePageOffset){
+                            freePageOffset = 0;
+                            cache_index++;
+                        }
+                    }
+                    if(freePageOffset){
+                        cache_index = numberOfIDs;
+                    }
                 }else{
                     cache_index++;
                 }
@@ -133,10 +144,10 @@ uint8_t ICACHE_FLASH_ATTR _fs_createFullBlock(fileobject_t *fn, uint8_t block){
     //Calculating how many data page we need to store cached data
     uint32_t body[FS_PAGE_SIZE / 4] = {[0 ... FS_PAGE_SIZE / 4 - 1] = 0xFFFFFFFF};
     uint8_t pages_len = 1;
-    if(fn->cache_len % FS_INDEX_INDEXPERPAGE){
-        pages_len = (uint8_t)(fn->cache_len / FS_INDEX_INDEXPERPAGE) + 1;
+    if(fn->cache_len % FS_DATA_DATAPERPAGE){
+        pages_len += (uint8_t)(fn->cache_len / FS_DATA_DATAPERPAGE);
     } else {
-        pages_len += fn->cache_len / FS_INDEX_INDEXPERPAGE;
+        pages_len += fn->cache_len / FS_DATA_DATAPERPAGE;
     }
     #ifdef FS_DEBUG
     os_printf("\n\rNeed %d page to store data\n\r", pages_len);
@@ -236,95 +247,111 @@ uint8_t ICACHE_FLASH_ATTR _fs_createFullBlock(fileobject_t *fn, uint8_t block){
     // os_printf("\n\rChar as int %08x", *p);   
 
 }
-uint8_t  _fs_writePage(uint16_t page_start_addr, char *header, uint8_t header_len, char *body, uint8_t body_len, uint32_t footer){
+//This function is modifying a page in cache and write it out if neccesery
+uint8_t  _fs_buildPage(uint16_t page_start_addr, char *header, uint8_t header_len, char *body, uint8_t body_len, uint32_t footer){
     os_printf("\n\rPAGEWRITE\n\r");
     uint8_t block = page_start_addr / FS_BLOCK_SIZE;
-    uint32_t *block_body = (uint32_t *) os_malloc( sizeof(uint32) * FS_BLOCK_SIZE / 4);
+    //We get another block number and the blkcache has data so we need to write it out
+    if(blk_cache.current_block != block && blk_cache.block_cache != NULL){
+        _fs_writeBlockCache(0);
+    }
+    blk_cache.current_block = block;
+    blk_cache.block_cache = (uint32_t *) os_malloc( sizeof(uint32) * FS_BLOCK_SIZE / 4);
     uint16_t block_body_index = 0;
-    spi_flash_read(FS_BASE_ADDRESS + FS_BLOCK_SIZE * block, block_body, FS_BLOCK_SIZE);
-    //spi_flash_erase_sector(FS_BASE_SECTOR + block);
-    uint8_t i = 0,j;
+    spi_flash_read(FS_BASE_ADDRESS + FS_BLOCK_SIZE * block, blk_cache.block_cache, FS_BLOCK_SIZE);
+    uint8_t i = 0, j=0;
     //header
     while((header_len - i) / 4){
-        block_body[page_start_addr + block_body_index] = (uint32_t) header[i + 3 ] << 24 | header[i + 2 ] << 16 | header[i + 1 ] << 8 | header[i];
+       blk_cache.block_cache[page_start_addr + block_body_index] = (uint32_t) header[i + 3 ] << 24 | header[i + 2 ] << 16 | header[i + 1 ] << 8 | header[i];
         block_body_index++;
         i+=4;
     }
-    block_body[page_start_addr + block_body_index] = 0;
+    blk_cache.block_cache[page_start_addr + block_body_index] = 0;
     //mixing header and data
     while(i < header_len){
-        block_body[page_start_addr + block_body_index] |= header[i] << ((i % 4) * 8); 
+        blk_cache.block_cache[page_start_addr + block_body_index] |= header[i] << ((i % 4) * 8); 
         i++;
     }
-    j = 0;
     while( i % 4 ){
-        block_body[page_start_addr + block_body_index] |= body[j] << ((i % 4) * 8);
+        if(j < body_len){
+            blk_cache.block_cache[page_start_addr + block_body_index] |= body[j] << ((i % 4) * 8);
+            j++;
+        } else {
+            blk_cache.block_cache[page_start_addr + block_body_index] |= 0xFF << ((i % 4) * 8);
+        }
         i++;
-        j++;
     }
     #ifdef FS_DEBUG
     os_printf("\n\rIndex: %d Page: \n\r", page_start_addr + block_body_index);
     for(i = 0; i < FS_PAGE_SIZE / 4 ; i++){
         if(i % 4)
-            os_printf("%08x ", block_body[i]);
+            os_printf("%08x ", blk_cache.block_cache[page_start_addr+i]);
         else
-            os_printf("\n\r%08x ", block_body[i]);
+            os_printf("\n\r%08x ", blk_cache.block_cache[page_start_addr+i]);
     }
     #endif
 
     //body
-    block_body_index++;
-    i = j;
-    while((body_len - i) / 4) {
-        block_body[page_start_addr + block_body_index] = (uint32_t) body[i + 3 ] << 24 | body[i + 2 ] << 16 | body[i + 1 ] << 8 | body[i];
+    if (body_len){
         block_body_index++;
-        i += 4;
+        i = j;
+        while ((body_len - i) / 4)
+        {
+            blk_cache.block_cache[page_start_addr + block_body_index] = (uint32_t)body[i + 3] << 24 | body[i + 2] << 16 | body[i + 1] << 8 | body[i];
+            block_body_index++;
+            i += 4;
+        }
+        blk_cache.block_cache[page_start_addr + block_body_index] = 0xFFFFFFFF;
+        while (i < body_len)
+        {
+            char tmp = ~body[i];
+            blk_cache.block_cache[page_start_addr + block_body_index] &= ~(tmp << (((i + 1) % 4) * 8));
+            i++;
+        }
     }
-    block_body[page_start_addr + block_body_index] = 0xFFFFFFFF;
-    while(i < body_len){
-        char tmp = ~body[i];
-        block_body[page_start_addr + block_body_index] &= ~( tmp << (((i + 1) % 4) * 8) );
-        i++;
-    }
-   
     block_body_index++;
-    if(footer == 0){
+    if(footer == 0){                                                                                //If no footer filling up remaining space
         while(block_body_index < FS_PAGE_SIZE  / 4){
-            block_body[page_start_addr + block_body_index] = 0xFFFFFFFF;
+            blk_cache.block_cache[page_start_addr + block_body_index] = 0xFFFFFFFF;
             block_body_index++;
         }
 
     } else {
         while(block_body_index < FS_PAGE_SIZE  / 4 - 1){
-            block_body[page_start_addr + block_body_index] = 0xFFFFFFFF;
+            blk_cache.block_cache[page_start_addr + block_body_index] = 0xFFFFFFFF;
             block_body_index++;
         }
          //footer
-        block_body[page_start_addr + block_body_index] = footer;
+        blk_cache.block_cache[page_start_addr + block_body_index] = footer;
     }
-
-    
-    
 
     #ifdef FS_DEBUG
     os_printf("\n\rIndex: %d Page: \n\r", page_start_addr + block_body_index);
     for(i = 0; i < FS_PAGE_SIZE / 4 ; i++){
         if(i % 4)
-            os_printf("%08x ", block_body[i]);
+            os_printf("%08x ", blk_cache.block_cache[page_start_addr+i]);
         else
-            os_printf("\n\r%08x ", block_body[i]);
+            os_printf("\n\r%08x ", blk_cache.block_cache[page_start_addr+i]);
     }
     #endif
 
-    //spi_flash_write(FS_BASE_ADDRESS + FS_BLOCK_SIZE * block, block_body, FS_BLOCK_SIZE);
     os_printf("\n\rPAGEWRITE DONE\n\r");
 
 }
+uint8_t _fs_writeBlockCache(uint8_t isErased){
+    if(!isErased){
+        spi_flash_erase_sector(FS_BASE_SECTOR + blk_cache.current_block);
+    }
+    spi_flash_write(FS_BASE_ADDRESS + FS_BLOCK_SIZE * blk_cache.current_block, blk_cache.block_cache, FS_BLOCK_SIZE);
+    blk_cache.block_cache = NULL;
+}
 
-uint8_t ICACHE_FLASH_ATTR _fs_buildMetaPage(fileobject_t *fn, uint32_t *body){
-    body[0] = fn->objid;                                                          //OBJ_ID and SNAPIX
-    body[1] = 0xF8;                                                               //Fixed value
-    body[2] = fn->size;                                                           //Size of a file
+uint8_t ICACHE_FLASH_ATTR _fs_buildMetaPage(fileobject_t *fn, uint32_t **body){
+    uint8_t pagelen = (FS_META_DATAPAGES_OFFSET + fn->pages_len + ((FS_META_DATAPAGES_OFFSET + fn->pages_len) % 4)) / 4;
+    *body = (uint32_t *) os_malloc(sizeof(uint32_t) * pagelen);
+    (*body)[0] = fn->objid;                                                          //OBJ_ID and SNAPIX
+    (*body)[1] = 0xF8;                                                               //Fixed value
+    (*body)[2] = fn->size;                                                           //Size of a file
     //Updating filename
     uint16_t index = _fsindex_getIndexbyID(fn->objid);
     if(index == fs_index_size){                                                     // OBJID not found in FS_INDEX
@@ -334,47 +361,44 @@ uint8_t ICACHE_FLASH_ATTR _fs_buildMetaPage(fileobject_t *fn, uint32_t *body){
     uint8_t fileobj_index;
     uint8_t body_index = 4;
     if(filename_len > 2){
-        body[3] = fs_index[index].filename[2] << 24 | fs_index[index].filename[1] << 16 | fs_index[index].filename[0] << 8 | 0x01;
+        (*body)[3] = fs_index[index].filename[2] << 24 | fs_index[index].filename[1] << 16 | fs_index[index].filename[0] << 8 | 0x01;
         fileobj_index = 3;
         while(fileobj_index < filename_len){
             if((filename_len - fileobj_index) / 4 ){
-                body[body_index] = (uint32_t) fs_index[index].filename[fileobj_index + 3] << 24 | fs_index[index].filename[fileobj_index + 2] << 16 | fs_index[index].filename[fileobj_index + 1] << 8 | fs_index[index].filename[fileobj_index];
+                (*body)[body_index] = (uint32_t) fs_index[index].filename[fileobj_index + 3] << 24 | fs_index[index].filename[fileobj_index + 2] << 16 | fs_index[index].filename[fileobj_index + 1] << 8 | fs_index[index].filename[fileobj_index];
                 fileobj_index += 4;
             } else {
-                body[body_index] = 0;
+                (*body)[body_index] = 0;
                 while(fileobj_index < filename_len){
-                    body[body_index] |= fs_index[index].filename[fileobj_index] << ((fileobj_index % 4 - 1) * 8);
+                    (*body)[body_index] |= fs_index[index].filename[fileobj_index] << ((fileobj_index % 4 - 1) * 8);
                     fileobj_index++;
                 }
             }
         body_index++;
         }
     } else {
-        body[3] = fs_index[index].filename[1] << 16 | fs_index[index].filename[0] << 8 | 0x01;
+        (*body)[3] = fs_index[index].filename[1] << 16 | fs_index[index].filename[0] << 8 | 0x01;
     }
     while(body_index < FS_META_MAX_FILENAME_LEN / 4)
-        body[body_index++] = 0x0;
+        (*body)[body_index++] = 0x0;
     //Update data page indexes
     for(index = 0; index < fn->pages_len; index+=2){
-        body[body_index++] = fn->pages[index + 1] << 16 | fn->pages[index];
+        (*body)[body_index++] = fn->pages[index + 1] << 16 | fn->pages[index];
     }
     if(index != fn->pages_len){
-        body[body_index++] = 0xFFFF << 16 | fn->pages[index];
+        (*body)[body_index++] = 0xFFFF << 16 | fn->pages[index];
     }
 
-    //Fill up remaining space
-    while(body_index < FS_PAGE_SIZE / 4){
-        body[body_index++] = 0xFFFFFFFF;
-    }
     #ifdef FS_DEBUG
     os_printf("\n\rMetapage: \n\r");
-    for(index = 0; index < FS_PAGE_SIZE / 4 ; index++){
+    for(index = 0; index < pagelen ; index++){
         if(index % 4)
             os_printf("%08x ", body[index]);
         else
             os_printf("\n\r%08x ", body[index]);
     }
     #endif
+    return pagelen;
 }
 uint16_t _fsindex_getIndexbyID(uint16_t objid){
     uint16_t index = 0;

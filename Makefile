@@ -27,7 +27,7 @@ ESPTOOL		?= esptool.py
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	ESPPORT		?= /dev/ttyUSB1
+	ESPPORT		?= /dev/ttyUSB0
 	ESPBAUD		?= 230400
 	# base directory of the ESP8266 SDK package, absolute
 	SDK_BASE	?= $(HOME_FOLDER)/ESP8266/esp-open-sdk/ESP8266_NONOS_SDK_V2.0.0_16_08_10

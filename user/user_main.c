@@ -25,7 +25,7 @@ void  user_init()
 	  gdbstub_init();
   #endif 
   fs_init();
-  fileobject_t fn1, fn2;
+  fileobject_t fn1, fn2, fn3;
   fs_createNewFile(&fn1, "testfile.txt");
   //test with large data
   char *p = (char *)os_malloc(sizeof(char) * 120);
@@ -49,17 +49,16 @@ void  user_init()
   //_fs_writeblock(&fn1, openblc);
   //tets with small data
   fs_createNewFile(&fn2, "testfile2.txt");
+  fs_createNewFile(&fn3, "testfile3.txt");
   fs_write(&fn2, "12345", 6);
   fs_flush(&fn2);
   _fs_dump_fileobject(&fn2);
-  fs_write(&fn2, "6789", 5);
-  fs_flush(&fn2);
-  _fs_dump_fileobject(&fn2);
+  fs_write(&fn3, "6789", 5);
+  fs_flush(&fn3);
+  _fs_dump_fileobject(&fn3);
   //openblc = _fs_getfreeblock();
   //os_printf("\n\rFree block: %d", openblc);
   //_fs_writeblock(&fn2, openblc);
-  uint32_t tmp[64];
-  _fs_buildMetaPage(&fn2, tmp);
   //_fs_writePage(0, "12345678", 9, "123456789", 10, 0xFF00FF00 );
 
 

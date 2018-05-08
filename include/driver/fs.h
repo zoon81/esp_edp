@@ -16,7 +16,7 @@ Meta page struckure: [little endian]
     8-9    :  SIZE of file [2byte]
     10-12   :   X
     13-44   : FILENAME
-    44-     : OFFSET where the content of the file is stored [2byte per page number]
+    44-     : OFFSET where the content of the file is stored [2byte per page number !!BIG ENDIAN!!]
 
 Data page structure: 
     0-1 :   OBJID [2byte]
@@ -90,18 +90,30 @@ typedef struct{
     uint16_t cache_len;                                     // Size of the cache
 } fileobject_t;
 
+typedef struct{
+    uint8_t current_block;
+    uint32_t *block_cache;
+    uint16_t *modified_pages;
+    uint8_t modified_pages_size;
+}blk_cacke_t;
+
 extern fs_index_t *fs_index;            // Look-up table for objectids and filenames
 extern uint16_t fs_index_size;
+extern blk_cacke_t blk_cache;           //Cache for a block
 
 void ICACHE_FLASH_ATTR fs_init();
 int8_t ICACHE_FLASH_ATTR fs_write(fileobject_t *fn, const char *data, uint16_t len);
+int8_t ICACHE_FLASH_ATTR fs_openfile(const char *file_name, fileobject_t *fn);
+uint8_t ICACHE_FLASH_ATTR fs_readfile_raw(fileobject_t *fn, uint32_t *buffer, uint16_t size_in_words);
+
 uint8_t ICACHE_FLASH_ATTR _fs_getfreepages(uint16_t *buffer, uint8_t numberOfFreePages);
 void ICACHE_FLASH_ATTR _fs_dump_fsindex();
 void ICACHE_FLASH_ATTR _fs_dump_fileobject(fileobject_t *fn);
 uint8_t ICACHE_FLASH_ATTR _fs_getfreeblock();
 uint8_t ICACHE_FLASH_ATTR _fs_writeblock(fileobject_t *fn, uint8_t block);
-uint8_t ICACHE_FLASH_ATTR _fs_writePage(uint16_t abs_page_addr, char *header, uint8_t header_len, char *body, uint8_t body_len, uint32_t footer);
-uint8_t ICACHE_FLASH_ATTR _fs_buildMetaPage(fileobject_t *fn, uint32_t *buffer);
+uint8_t  _fs_buildPage(uint16_t page_start_addr, char *header, uint8_t header_len, char *body, uint8_t body_len, uint32_t footer);
+uint8_t _fs_writeBlockCache(uint8_t isErased);
+uint8_t ICACHE_FLASH_ATTR _fs_buildMetaPage(fileobject_t *fn, uint32_t **body);
 uint16_t _fsindex_getIndexbyID(uint16_t objid);
 
 #endif

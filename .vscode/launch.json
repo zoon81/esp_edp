@@ -21,7 +21,7 @@
             { "text": "set remote hardware-breakpoint-limit 1" },
             { "text": "set remote hardware-watchpoint-limit 1" },
             { "text": "set debug xtensa 4" },
-            { "text": "target remote /dev/ttyUSB2" }
+            { "text": "target remote /dev/ttyUSB0" }
             ]
         },
         "osx": {

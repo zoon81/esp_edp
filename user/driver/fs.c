@@ -1,11 +1,18 @@
 #include "driver/fs.h"
 fs_index_t *fs_index;            // Look-up table for objectids and filenames
 uint16_t fs_index_size;
-uint16_t *allocated_offsets = NULL;     // List of offsets where data are writen but the index page not updated yet
+//uint16_t *preallocated_pages;     // List of offsets where data are writen or going to be write, but the index page not updated yet
+//uint8_t preallocated_pages_size;
+blk_cacke_t blk_cache;
 
 void ICACHE_FLASH_ATTR fs_init(){
     fs_index = NULL;
     fs_index_size = 0;
+    blk_cache.block_cache = NULL;
+    blk_cache.modified_pages = NULL;
+    blk_cache.modified_pages_size = 0;
+    //preallocated_pages = NULL;
+    //preallocated_pages_size = 0;
     uint16_t *object_ids;           // tmp buffer for index page
     uint8_t block;
     for (block = 0; block < (FS_WHOLE_SIZE / FS_BLOCK_SIZE); block++)
@@ -253,7 +260,7 @@ int8_t ICACHE_FLASH_ATTR fs_write(fileobject_t *fn, const char *data, uint16_t l
         #ifdef FS_DEBUG
         os_printf("\n\rReallocating memory for cache");
         #endif
-        fn->cache = (char *)os_realloc(fn->cache, fn->cache_len + sizeof(fn->cache) * len);
+        fn->cache = (char *)os_realloc(fn->cache, (fn->cache_len + len) * sizeof(fn->cache));
         fn->cache_len += len;
         #ifdef FS_DEBUG
         os_printf("\n\rCache address is: 0x%x, cache size %d", fn->cache, fn->cache_len);
@@ -270,34 +277,79 @@ uint8_t ICACHE_FLASH_ATTR fs_flush(fileobject_t *fn){
     char header[FS_DATA_HEADER_LEN];
     header[0] = fn->objid & 0xFF;
     header[1] = fn->objid >> 8;
-    header[2] = 0;
-    header[3] = 0;
     header[4] = 0xFC;
-    uint16_t freepage[1];
-    _fs_getfreepages(freepage, 1);
-    _fs_writePage(0, header, FS_DATA_HEADER_LEN, fn->cache, fn->cache_len, 0);
-    //Updating pages[] table
-    if(fn->pages == NULL){
-        #ifdef FS_DEBUG
-        os_printf("\n\rAllocating memory for pages");
-        #endif
-        fn->pages = (uint16_t *)os_malloc(sizeof(fn->pages));
-        fn->pages_len++;
-        #ifdef FS_DEBUG
-        os_printf("\n\rPages address is: 0x%x, pages size: %d", fn->pages, fn->pages_len);
-        #endif
-    }else{
-        #ifdef FS_DEBUG
-        os_printf("\n\rReallocating memory for pages");
-        #endif
-        fn->pages_len++;
-        fn->pages = (uint16_t *)os_realloc(fn->pages, fn->pages_len * sizeof(fn->pages));
-        #ifdef FS_DEBUG
-        os_printf("\n\rPages address is: 0x%x, pages size: %d", fn->pages, fn->pages_len);
-        #endif
+
+    //Calculating how many data page we need to store cached data
+    uint8_t pages_len = 1;
+    pages_len++;                                                                                    //One more for the METAPAGE
+    if(fn->cache_len % FS_DATA_DATAPERPAGE){
+        pages_len += (uint8_t)(fn->cache_len / FS_DATA_DATAPERPAGE);
+    } else {
+        pages_len += fn->cache_len / FS_DATA_DATAPERPAGE;
     }
-    fn->pages[fn->pages_len - 1] = freepage[0];
-    fn->size += fn->cache_len;
+    uint16_t freepage[pages_len];
+    _fs_getfreepages(freepage, pages_len);
+    uint8_t blkcache_start = blk_cache.modified_pages_size;                                         //This is storing the last element position
+    //Allocating memory for preallocated pages table
+    if(blk_cache.modified_pages == NULL){
+        blk_cache.modified_pages = (uint16_t *) os_malloc(pages_len * sizeof(uint16_t));
+        blk_cache.modified_pages_size = pages_len;
+    } else {
+        blk_cache.modified_pages = (uint16_t *) os_realloc(blk_cache.modified_pages, (pages_len + blk_cache.modified_pages_size) * sizeof(uint16_t));
+        blk_cache.modified_pages_size += pages_len;
+    }
+
+    //Building data pages
+    uint8_t page;
+    for (page = 0; page < pages_len; page++){
+        //Updating SNAP IX
+        header[2] = page & 0xF0;
+        header[3] = page >> 8;
+        uint8_t transfered_data;
+        //Transfering data to pagebuilder
+        if(fn->cache_len / FS_DATA_DATAPERPAGE){
+            transfered_data = FS_DATA_DATAPERPAGE;
+            _fs_buildPage(freepage[page], header, FS_DATA_HEADER_LEN, fn->cache, transfered_data, 0);
+            fn->cache += transfered_data;
+            fn->cache_len -= transfered_data;
+        } else {
+            transfered_data =fn->cache_len % FS_DATA_DATAPERPAGE;
+            _fs_buildPage(freepage[page], header, FS_DATA_HEADER_LEN, fn->cache, transfered_data, 0);
+        }
+        //Updating pages[] table
+        if (fn->pages == NULL)
+        {
+            #ifdef FS_DEBUG
+            os_printf("\n\rAllocating memory for pages");
+            #endif
+            fn->pages = (uint16_t *)os_malloc(sizeof(fn->pages));
+            fn->pages_len++;
+            #ifdef FS_DEBUG
+            os_printf("\n\rPages address is: 0x%x, pages size: %d", fn->pages, fn->pages_len);
+            #endif
+        }
+        else
+        {
+            #ifdef FS_DEBUG
+            os_printf("\n\rReallocating memory for pages");
+            #endif
+            fn->pages_len++;
+            fn->pages = (uint16_t *)os_realloc(fn->pages, fn->pages_len * sizeof(fn->pages));
+            #ifdef FS_DEBUG
+            os_printf("\n\rPages address is: 0x%x, pages size: %d", fn->pages, fn->pages_len);
+            #endif
+        }
+        fn->pages[fn->pages_len - 1] = freepage[page];
+        fn->size += transfered_data;
+
+        //Updating modified pages table
+        blk_cache.modified_pages[blkcache_start + page] = freepage[page];
+    }
+    uint32_t *meta_page;
+    uint8_t metapage_len = _fs_buildMetaPage(fn, *meta_page);
+    _fs_getfreepages(freepage, 1);
+    _fs_buildPage(freepage[0], meta_page, metapage_len, NULL, 0, 0);
+
     os_free(fn->cache);
     fn->cache = NULL;
     fn->cache_len = 0;
